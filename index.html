@@ -1,436 +1,310 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title data-lang-key="title">ابزار بررسی کیفیت اینترنت – نسخه وب</title>
-  <link rel="icon" href="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/refs/heads/main/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@33.003/Vazirmatn-font-face.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ابزار بررسی کیفیت اینترنت ایران – README</title>
+  
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazir-font@33.003/Vazirmatn-font-face.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
   <style>
     :root {
-      --bg: #0a0a0f;
-      --card: #181c2e;
-      --text: #e0e7ff;
-      --muted: #a0a8c0;
-      --accent: #6366f1;
-      --success: #22c55e;
-      --warning: #eab308;
-      --danger: #ef4444;
-      --border: #2a2f4f;
-      --radius: 10px;
+      --bg: #0f1117;
+      --card: #161b22;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-dark: #388bfd;
+      --success: #3fb950;
+      --border: #30363d;
+      --radius: 12px;
     }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --card: #f6f8fa;
+      --text: #24292f;
+      --text-muted: #57606a;
+      --accent: #0969da;
+      --accent-dark: #0550ae;
+      --success: #1a7f37;
+      --border: #d0d7de;
+    }
+
     body {
-      font-family: 'Vazirmatn', system-ui, sans-serif;
+      font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
       background: var(--bg);
       color: var(--text);
       margin: 0;
-      padding: 1.5rem;
-      line-height: 1.6;
+      padding: 0;
+      line-height: 1.65;
+      transition: background 0.4s, color 0.4s;
     }
-    header, footer {
-      background: #15193a;
-      padding: 1.2rem;
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    header {
       text-align: center;
+      padding: 3rem 0 2rem;
+      position: relative;
     }
-    .card {
+
+    h1 {
+      font-size: 2.6rem;
+      margin: 0.3em 0;
+      color: var(--accent);
+    }
+
+    .lang-toggle {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
       background: var(--card);
-      border-radius: var(--radius);
-      padding: 1.3rem;
-      margin-bottom: 1.5rem;
       border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.25s;
     }
-    button {
+
+    .lang-toggle:hover {
       background: var(--accent);
       color: white;
-      border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.05rem;
+      border-color: var(--accent);
     }
-    button:hover { background: #818cf8; }
-    button.stop { background: var(--danger); }
-    button.stop:hover { background: #f87171; }
-    select {
-      padding: 0.65rem;
-      border-radius: 8px;
-      background: #11151f;
-      color: var(--text);
+
+    .badges {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin: 1.5rem 0 3rem;
+      flex-wrap: wrap;
+    }
+
+    .markdown-body {
+      background: var(--card);
+      padding: 2.2rem;
+      border-radius: var(--radius);
       border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     }
+
+    .markdown-body h2, .markdown-body h3 {
+      color: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4em;
+      margin-top: 2.2em;
+    }
+
     table {
       width: 100%;
-      border-collapse: separate;
-      border-spacing: 0 0.5rem;
-      font-size: 0.92rem;
+      border-collapse: collapse;
+      margin: 1.8em 0;
+      font-size: 0.97rem;
     }
+
     th, td {
-      padding: 0.9rem 1rem;
+      border: 1px solid var(--border);
+      padding: 0.9em 1.1em;
       text-align: right;
     }
+
     th {
-      background: #11151f;
-      color: var(--muted);
-      border-bottom: 2px solid var(--border);
+      background: rgba(88, 166, 255, 0.08);
+      font-weight: 600;
+      color: var(--accent);
     }
-    tr {
-      background: #181c2e;
-      border-radius: var(--radius);
+
+    tr:nth-child(even) {
+      background: rgba(48, 54, 61, 0.3);
     }
-    .ok { color: var(--success); font-weight: bold; }
-    .fail { color: var(--danger); }
-    .warn { color: var(--warning); }
-    .code { font-family: monospace; direction: ltr; word-break: break-all; font-size: 0.85rem; background: #0d1117; padding: 0.3rem 0.6rem; border-radius: 6px; }
-    .manual-links {
-      margin: 1rem 0;
-      padding: 1rem;
-      background: #11151f;
-      border-radius: var(--radius);
-      display: none;
-    }
-    .manual-links a {
-      display: inline-block;
-      background: var(--success);
-      color: white;
-      padding: 0.7rem 1.4rem;
-      margin: 0.4rem;
-      border-radius: 8px;
+
+    a {
+      color: var(--accent);
       text-decoration: none;
+      transition: color 0.2s;
     }
-    .manual-links a:hover { background: #16a34a; }
-    .summary {
-      margin-top: 1.5rem;
-      padding: 1.2rem;
-      background: #1e2338;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      font-size: 1.05rem;
-      line-height: 1.7;
-      display: none;
-    }
-    .summary h3 {
-      margin-top: 0;
-      color: var(--success);
-    }
-    footer {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      margin-top: 2rem;
-      text-align: center;
-    }
-    .github-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #60a5fa;
-      text-decoration: none;
-      font-size: 0.95rem;
-    }
-    .github-link svg { fill: currentColor; width: 20px; height: 20px; }
-    .github-link:hover { color: #93c5fd; }
-    a.external-link {
-      color: #60a5fa;
+
+    a:hover {
+      color: var(--accent-dark);
       text-decoration: underline;
     }
-    a.external-link:hover { color: #93c5fd; }
+
+    .center {
+      text-align: center;
+    }
+
+    .thanks {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin: 4rem 0 2rem;
+      color: var(--success);
+      padding: 1.5rem;
+      background: rgba(63, 185, 80, 0.08);
+      border-radius: var(--radius);
+      border: 1px solid rgba(63, 185, 80, 0.2);
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 1.5rem 1rem; }
+      header { padding: 2.5rem 0 1.5rem; }
+      .lang-toggle { right: 1rem; top: 1rem; }
+      h1 { font-size: 2.1rem; }
+    }
   </style>
 </head>
-<body>
+<body data-lang="fa" data-theme="dark">
 
-<header>
-  <h1 data-lang-key="title">ابزار بررسی کیفیت اینترنت – نسخه وب</h1>
-</header>
+  <div class="container">
 
-<main>
-  <div class="card">
-    <p data-lang-key="desc">
-      در این ابزار <b>دانلود واقعی فایل</b> انجام می‌شود.<br>
-      بعد از اتمام تست، نتیجه نهایی کیفیت اینترنت شما نمایش داده می‌شود.
-    </p>
-    <div>
-      <label data-lang-key="lang_label">زبان / Language:</label>
-      <select id="lang">
-        <option value="fa" selected>فارسی</option>
-        <option value="en">English</option>
-      </select>
-      <button id="start" data-lang-key="start">شروع تست</button>
+    <header>
+      <h1 data-fa="ابزار بررسی کیفیت اینترنت" data-en="Iran Internet Quality Tester">
+        ابزار بررسی کیفیت اینترنت
+      </h1>
+      <p data-fa="نسخه محدود وب" data-en="Web Version">
+        نسخه محدود وب
+      </p>
+
+      <div class="lang-toggle" id="langToggle">
+        <i class="fa-solid fa-language"></i> EN / FA
+      </div>
+
+
+    </header>
+
+    <div class="markdown-body">
+
+      <h2 data-fa="لینک‌های مستقیم استفاده" data-en="Direct Access Links">لینک‌های مستقیم استفاده</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th data-fa="نسخه" data-en="Version">نسخه</th>
+            <th data-fa="توضیحات" data-en="Description">توضیحات</th>
+            <th data-fa="لینک" data-en="Link">لینک</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td data-fa="تست پایه" data-en="Basic Test">تست پایه</td>
+            <td data-fa="تست دانلود واقعی + مسیر IPv4/IPv6" data-en="Real download test + IPv4/IPv6 path">تست دانلود واقعی + مسیر IPv4/IPv6</td>
+            <td><a href="https://saeed9400.github.io/IRAN_Internet_Quality/v1" target="_blank"  data-fa="شروع تست اصلی" data-en="Start Basic Test">شروع تست اصلی</a></td>
+          </tr>
+          <tr>
+            <td data-fa="نسخه ۲ (پیشرفته)" data-en="Version 2 (Advanced)">نسخه ۲</td>
+            <td data-fa="تست جامع + پینگ + QUIC + DoH + WebRTC + DNS Hijack + اتصال عمومی" data-en="Comprehensive test + Ping + QUIC + DoH + WebRTC + DNS Hijack + General connectivity">تست جامع + پینگ + QUIC + DoH + WebRTC + DNS Hijack + اتصال عمومی</td>
+            <td><a href="https://saeed9400.github.io/IRAN_Internet_Quality/v1" target="_blank"  data-fa="شروع تست پیشرفته" data-en="Start Advanced Test">شروع تست پیشرفته</a></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2 data-fa="هدف پروژه" data-en="Project Goal">هدف پروژه</h2>
+
+      <p data-fa="این ابزار بدون نیاز به نصب و فقط با باز کردن صفحه در مرورگر به شما کمک می‌کند بفهمید:" data-en="This tool helps you understand your internet situation right from the browser — no installation required:">
+        این ابزار بدون نیاز به نصب و فقط با باز کردن صفحه در مرورگر به شما کمک می‌کند بفهمید:
+      </p>
+
+      <ul>
+        <li data-fa="آیا مسیر دانلود شما واقعاً باز است یا فقط به‌خاطر CORS بلاک به نظر می‌رسد؟" data-en="Is your download path really open or just blocked by browser CORS?">
+          آیا مسیر دانلود شما واقعاً باز است یا فقط به‌خاطر CORS بلاک به نظر می‌رسد؟
+        </li>
+        <li data-fa="آیا DNS Hijacking در سطح ISP شما رخ می‌دهد؟" data-en="Is DNS Hijacking happening at your ISP level?">
+          آیا DNS Hijacking در سطح ISP شما رخ می‌دهد؟
+        </li>
+        <li data-fa="سرعت تقریبی پینگ به سرورهای بین‌المللی چقدر است؟" data-en="What is the approximate ping to international servers?">
+          سرعت تقریبی پینگ به سرورهای بین‌المللی چقدر است؟
+        </li>
+        <li data-fa="آیا پروتکل‌های مدرن (QUIC / DoH / WebRTC) کار می‌کنند؟" data-en="Do modern protocols (QUIC / DoH / WebRTC) work?">
+          آیا پروتکل‌های مدرن (QUIC / DoH / WebRTC) کار می‌کنند؟
+        </li>
+        <li data-fa="IPv6 شما فعال است یا خیر؟" data-en="Is IPv6 enabled?">
+          IPv6 شما فعال است یا خیر؟
+        </li>
+      </ul>
+
+      <h2 data-fa="تفاوت نسخه‌ها" data-en="Version Comparison">تفاوت نسخه‌ها</h2>
+
+      <table>
+        <thead>
+          <tr>
+            <th data-fa="ویژگی" data-en="Feature">ویژگی</th>
+            <th data-fa="نسخه ۱" data-en="v1">نسخه ۱</th>
+            <th data-fa="نسخه ۲" data-en="v2">نسخه ۲</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td data-fa="دانلود واقعی فایل" data-en="Real file download">دانلود واقعی فایل</td><td>✓</td><td>✓</td></tr>
+          <tr><td data-fa="نمایش IP (v4 + v6)" data-en="Show IP (v4 + v6)">نمایش IP (v4 + v6)</td><td>✓</td><td>✓</td></tr>
+          <tr><td data-fa="تست پینگ / Jitter" data-en="Ping / Jitter test">تست پینگ / Jitter</td><td>—</td><td>✓</td></tr>
+          <tr><td data-fa="تست DNS Hijack" data-en="DNS Hijack detection">تست DNS Hijack</td><td>—</td><td>✓</td></tr>
+          <tr><td data-fa="تست QUIC / HTTP/3" data-en="QUIC / HTTP/3 support">تست QUIC / HTTP/3</td><td>—</td><td>✓</td></tr>
+          <tr><td data-fa="تست DoH" data-en="DoH support test">تست DoH</td><td>—</td><td>✓</td></tr>
+          <tr><td data-fa="تست WebRTC" data-en="WebRTC test">تست WebRTC</td><td>—</td><td>✓</td></tr>
+          <tr><td data-fa="پراکسی در صورت بلاک CORS" data-en="Proxy on CORS block">پراکسی در صورت بلاک CORS</td><td>—</td><td>✓</td></tr>
+        </tbody>
+      </table>
+
+      <h2 data-fa="توسعه‌دهنده" data-en="Developer">توسعه‌دهنده</h2>
+      <p>
+        <strong>saeed9400</strong><br>
+        GitHub: <a href="https://github.com/saeed9400" target="_blank">github.com/saeed9400</a>
+      </p>
+
+		<div class="center thanks" data-fa="با عشق و به عشق ایران ❤️❤️" data-en="With love, for the love of Iran ❤️❤️">
+		  با عشق و به عشق ایران ❤️❤️
+		</div>
+		
+      <div class="badges">
+        <img src="https://img.shields.io/github/license/saeed9400/IRAN_Internet_Quality?style=flat-square" alt="License"/>
+        <img src="https://img.shields.io/github/stars/saeed9400/IRAN_Internet_Quality?style=flat-square" alt="Stars"/>
+        <img src="https://img.shields.io/github/issues/saeed9400/IRAN_Internet_Quality?style=flat-square" alt="Issues"/>
+      </div>
     </div>
+
   </div>
 
-  <div class="card">
-    <table>
-      <thead>
-        <tr>
-          <th data-lang-key="th_test">تست</th>
-          <th data-lang-key="th_status">وضعیت</th>
-          <th data-lang-key="th_result">نتیجه</th>
-          <th data-lang-key="th_time">زمان</th>
-          <th data-lang-key="th_size">حجم</th>
-          <th data-lang-key="th_source">منبع / روش</th>
-        </tr>
-      </thead>
-      <tbody id="out"></tbody>
-    </table>
-  </div>
+  <script>
+    const langToggle = document.getElementById('langToggle');
+    const html = document.documentElement;
 
-  <div class="manual-links" id="manual"></div>
+    function updateLanguage() {
+      const current = html.getAttribute('data-lang');
+      const next = current === 'fa' ? 'en' : 'fa';
+      html.setAttribute('data-lang', next);
+      html.setAttribute('dir', next === 'fa' ? 'rtl' : 'ltr');
 
-  <div class="summary" id="summary">
-    <h3 data-lang-key="summary_title">نتیجه نهایی کیفیت اینترنت شما</h3>
-    <div id="summaryContent"></div>
-  </div>
-</main>
+      document.querySelectorAll('[data-fa][data-en]').forEach(el => {
+        el.textContent = el.getAttribute(`data-${next}`);
+      });
 
-<footer>
-  <p data-lang-key="footer_cors">
-    دانلودهایی که به دلیل CORS بلاک می‌شوند، به‌عنوان «مسدود توسط مرورگر» گزارش می‌شوند.
-  </p>
-  <p data-lang-key="footer_success">
-    اگر دانلود واقعی انجام شد → مسیر دانلود شما باز است.
-  </p>
-  <a href="https://github.com/saeed9400/" target="_blank" class="github-link">
-    <span data-lang-key="github">پروژه در GitHub</span>
-    <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-  </a>
-</footer>
-
-<script>
-// ترجمه‌ها
-const TXT = {
-  fa: {
-    title: "ابزار بررسی کیفیت اینترنت – نسخه وب",
-    desc: "در این ابزار <b>دانلود واقعی فایل</b> انجام می‌شود.<br>بعد از اتمام تست، نتیجه نهایی کیفیت اینترنت شما نمایش داده می‌شود.",
-    lang_label: "زبان / Language:",
-    start: "شروع تست",
-    stop: "توقف تست",
-    th_test: "تست",
-    th_status: "وضعیت",
-    th_result: "نتیجه",
-    th_time: "زمان",
-    th_size: "حجم",
-    th_source: "منبع / روش",
-    ok: "موفق",
-    fail: "ناموفق",
-    warn: "هشدار",
-    download_success: "دانلود واقعی انجام شد",
-    download_fail: "مسدود توسط مرورگر (CORS) – لطفاً روی لینک دستی کلیک کنید",
-    no_ip: "عدم دریافت IP",
-    ip_shown: "IP مشاهده‌شده: ",
-    ipv4: "مسیر IPv4",
-    ipv6: "مسیر IPv6",
-    footer_cors: "دانلودهایی که به دلیل CORS بلاک می‌شوند، به‌عنوان «مسدود توسط مرورگر» گزارش می‌شوند.",
-    footer_success: "اگر دانلود واقعی انجام شد → مسیر دانلود شما باز است.",
-    manual_title: "لینک‌های دانلود دستی (در صورت بلاک fetch)",
-    manual_note: "روی لینک کلیک کنید و دانلود را دستی انجام دهید تا وضعیت سرور مشخص شود.",
-    summary_title: "نتیجه نهایی کیفیت اینترنت شما",
-    summary_good: "کیفیت اینترنت شما <strong>خوب</strong> است.<br>مسیرهای اصلی تست‌شده باز هستند و دانلودها با سرعت قابل قبول انجام شدند.",
-    summary_medium: "کیفیت اینترنت شما <strong>متوسط</strong> است.<br>بعضی مسیرها باز هستند، اما برخی به دلیل محدودیت مرورگر یا سرور بلاک شدند.",
-    summary_bad: "کیفیت اینترنت شما <strong>پایین یا محدود</strong> است.<br>بیشتر مسیرها بلاک شدند – ممکن است نیاز به ابزار دور زدن داشته باشید.",
-    summary_ip: "IP شما: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a> – این لینک را باز کنید تا مکان و نوع اتصال مشخص شود.",
-    summary_success_count: "دانلودهای موفق: [COUNT] از [TOTAL]",
-    summary_manual: "برای اطمینان، حتماً لینک‌های دستی را هم تست کنید. اگر دانلود دستی هم شروع نشد، مسیر واقعاً محدود است.",
-    cors_note: "برخی تست‌ها به دلیل محدودیت مرورگر (CORS) ناموفق بودند. حتماً لینک‌های دستی را چک کنید.",
-    github: "پروژه در GitHub"
-  },
-  en: {
-    title: "Internet Quality Tester – Web Version",
-    desc: "This tool performs <b>real file download</b>.<br>After the test, a final summary of your internet quality will be shown.",
-    lang_label: "Language:",
-    start: "Start Test",
-    stop: "Stop Test",
-    th_test: "Test",
-    th_status: "Status",
-    th_result: "Result",
-    th_time: "Time",
-    th_size: "Size",
-    th_source: "Source / Method",
-    ok: "OK",
-    fail: "Fail",
-    warn: "Warning",
-    download_success: "Real download completed",
-    download_fail: "Blocked by browser (CORS) – please click manual link",
-    no_ip: "Failed to get IP",
-    ip_shown: "Visible IP: ",
-    ipv4: "IPv4 Route",
-    ipv6: "IPv6 Route",
-    footer_cors: "Downloads blocked by CORS are reported as «Blocked by browser».",
-    footer_success: "If real download succeeded → your download path is open.",
-    manual_title: "Manual Download Links (if fetch blocked)",
-    manual_note: "Click the link and download manually to check server accessibility.",
-    summary_title: "Final Internet Quality Summary",
-    summary_good: "Your internet quality is <strong>good</strong>.<br>Main tested paths are open and download speeds are acceptable.",
-    summary_medium: "Your internet quality is <strong>medium</strong>.<br>Some paths work, but others are blocked by browser/server restrictions.",
-    summary_bad: "Your internet quality is <strong>low or restricted</strong>.<br>Most paths are blocked – you may need better circumvention tools.",
-    summary_ip: "Your IP: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a> – Open this link to check location and connection type.",
-    summary_success_count: "Successful downloads: [COUNT] of [TOTAL]",
-    summary_manual: "For certainty, test the manual links. If manual download also fails, the path is truly restricted.",
-    cors_note: "Some tests failed due to browser restrictions (CORS). Please check the manual links.",
-    github: "Project on GitHub"
-  }
-};
-
-let LANG = "fa";
-let running = false;
-let successCount = 0;
-let totalTests = 6;
-let ipDetected = "";
-
-const langSelect = document.getElementById("lang");
-const startBtn = document.getElementById("start");
-const out = document.getElementById("out");
-const manual = document.getElementById("manual");
-const summary = document.getElementById("summary");
-const summaryContent = document.getElementById("summaryContent");
-
-function updateLanguage() {
-  document.documentElement.lang = LANG;
-  document.documentElement.dir = LANG === "fa" ? "rtl" : "ltr";
-  document.querySelectorAll("[data-lang-key]").forEach(el => {
-    const k = el.getAttribute("data-lang-key");
-    if (TXT[LANG][k]) el.innerHTML = TXT[LANG][k];
-  });
-  startBtn.textContent = running ? TXT[LANG].stop : TXT[LANG].start;
-}
-
-langSelect.onchange = e => {
-  LANG = e.target.value;
-  updateLanguage();
-
-  out.innerHTML = "";
-  manual.innerHTML = `<h3>${TXT[LANG].manual_title}</h3>`;
-  manual.style.display = "none";
-  summary.style.display = "none";
-  summaryContent.innerHTML = "";
-};
-
-updateLanguage();
-
-function row(test, status, result, time, size, source) {
-  const tr = document.createElement("tr");
-  tr.innerHTML = `<td>${test}</td><td class="${status}">${TXT[LANG][status] || status}</td><td>${result}</td><td>${time}</td><td>${size}</td><td class="code">${source}</td>`;
-  out.appendChild(tr);
-}
-
-async function timed(fn) {
-  const start = performance.now();
-  try {
-    const val = await fn();
-    return { ok: true, val, ms: Math.round(performance.now() - start) };
-  } catch (err) {
-    return { ok: false, ms: Math.round(performance.now() - start) };
-  }
-}
-
-async function realDownload(label, url, maxBytes = 512*1024) {
-  const t = await timed(async () => {
-    const c = new AbortController();
-    let read = 0;
-    const res = await fetch(url, { signal: c.signal, cache: "no-store" });
-    if (!res.body) throw new Error("no stream");
-    const reader = res.body.getReader();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      read += value ? value.length : 0;
-      if (read >= maxBytes) { c.abort(); break; }
+      langToggle.innerHTML = next === 'fa' 
+        ? '<i class="fa-solid fa-language"></i> EN / FA'
+        : '<i class="fa-solid fa-language"></i> FA / EN';
     }
-    return read;
-  });
 
-  if (t.ok) {
-    successCount++;
-    const kb = (t.val / 1024).toFixed(1);
-    row(label, "ok", TXT[LANG].download_success, `${t.ms} ms`, `${kb} KB`, url);
-  } else {
-    row(label, "fail", TXT[LANG].download_fail, `${t.ms} ms`, "—", url);
-    const div = document.createElement("div");
-    div.innerHTML = `<p>${TXT[LANG].manual_note}</p>`;
-    const a = document.createElement("a");
-    a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.textContent = label;
-    div.appendChild(a);
-    manual.appendChild(div);
-    manual.style.display = "block";
-  }
-}
+    langToggle.addEventListener('click', updateLanguage);
 
-async function ipTest(label, url, expectV6) {
-  const t = await timed(async () => {
-    const res = await fetch(url, { cache: "no-store" });
-    return (await res.text()).trim();
-  });
+    // Optional: Theme toggle (dark/light) – uncomment if desired
+    /*
+    const themeToggle = document.createElement('div');
+    themeToggle.className = 'lang-toggle';
+    themeToggle.style.left = '1.5rem';
+    themeToggle.style.right = 'auto';
+    themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i> / <i class="fa-solid fa-sun"></i>';
+    document.querySelector('header').appendChild(themeToggle);
 
-  if (t.ok) {
-    const ip = t.val;
-    const isV6 = ip.includes(":");
-    const st = (isV6 === expectV6) ? "ok" : "warn";
-    row(label, st, TXT[LANG].ip_shown + ip, `${t.ms} ms`, "—", url);
-    if (label.includes("IPv4")) ipDetected = ip;
-  } else {
-    row(label, "fail", TXT[LANG].no_ip, `${t.ms} ms`, "—", url);
-  }
-}
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = html.getAttribute('data-theme');
+      html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+    });
+    */
+  </script>
 
-function showSummary() {
-  summary.style.display = "block";
-  let text = "";
-
-  if (successCount >= 4) {
-    text += `<p>${TXT[LANG].summary_good}</p>`;
-  } else if (successCount >= 2) {
-    text += `<p>${TXT[LANG].summary_medium}</p>`;
-  } else {
-    text += `<p>${TXT[LANG].summary_bad}</p>`;
-  }
-
-  text += `<p>${TXT[LANG].summary_ip.replace(/\[IP\]/g, ipDetected)}</p>`;
-  text += `<p>${TXT[LANG].summary_success_count.replace("[COUNT]", successCount).replace("[TOTAL]", totalTests)}</p>`;
-
-  if (successCount < totalTests) {
-    text += `<p>${TXT[LANG].cors_note}</p>`;
-  }
-
-  text += `<p>${TXT[LANG].summary_manual}</p>`;
-
-  summaryContent.innerHTML = text;
-}
-
-async function run() {
-  successCount = 0;
-  out.innerHTML = "";
-  manual.innerHTML = `<h3>${TXT[LANG].manual_title}</h3>`;
-  manual.style.display = "none";
-  summary.style.display = "none";
-  running = true;
-  startBtn.textContent = TXT[LANG].stop;
-  startBtn.classList.add("stop");
-  langSelect.disabled = true;
-
-  await ipTest(TXT[LANG].ipv4, "https://api.ipify.org", false);
-  await ipTest(TXT[LANG].ipv6, "https://api64.ipify.org", true);
-
-  await realDownload("GitHub Raw", "https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore");
-  await realDownload("jsDelivr lodash", "https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js");
-  await realDownload("unpkg react", "https://unpkg.com/react@18/umd/react.production.min.js");
-
-  await realDownload("OpenWRT lastupdate", "https://downloads.openwrt.org/releases/lastupdate", 128*1024);
-  await realDownload("Passwall2 IPK", "https://github.com/Openwrt-Passwall/openwrt-passwall2/releases/download/26.2.14-1/luci-app-passwall2_26.2.14-r1_all.ipk");
-  await realDownload("Passwall Packages SF", "https://sourceforge.net/projects/openwrt-passwall-build/files/releases/packages-24.10/mipsel_74kc/passwall2/Packages/download");
-
-  showSummary();
-
-  running = false;
-  langSelect.disabled = false;
-  startBtn.textContent = TXT[LANG].start;
-  startBtn.classList.remove("stop");
-}
-
-startBtn.onclick = () => {
-  if (!running) run();
-};
-</script>
 </body>
 </html>
