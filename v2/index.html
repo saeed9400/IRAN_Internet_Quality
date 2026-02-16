@@ -234,6 +234,7 @@ const TXT = {
     github: "پروژه در GitHub",
     dns_hijack_yes: "DNS Hijack تشخیص داده شد",
     dns_hijack_no: "بدون DNS Hijack",
+    dns_error: "خطا در دریافت پاسخ DNS",
     quality_good: "کیفیت خوب",
     quality_average: "کیفیت متوسط",
     quality_poor: "کیفیت ضعیف",
@@ -248,8 +249,10 @@ const TXT = {
     webrtc_unsupported: "WebRTC پشتیبانی نمی‌شود",
     ipv6_yes: "IPv6 فعال است",
     ipv6_no: "IPv6 غیرفعال است",
-    websites_accessible: "وبسایت‌ها قابل دسترسی",
-    websites_blocked: "وبسایت‌ها بلاک شده"
+    connectivity_good: "اتصال عمومی خوب",
+    connectivity_medium: "اتصال متوسط / برخی مشکلات",
+    connectivity_bad: "مشکل جدی در اتصال عمومی",
+    connectivity_test: "تست اتصال عمومی / CDN / IP"
   },
   en: {
     title: "Internet Quality Tester – Web 2nd Version",
@@ -287,6 +290,7 @@ const TXT = {
     github: "Project on GitHub",
     dns_hijack_yes: "DNS Hijack detected",
     dns_hijack_no: "No DNS Hijack",
+    dns_error: "Error getting DNS response",
     quality_good: "Good quality",
     quality_average: "Average quality",
     quality_poor: "Poor quality",
@@ -301,16 +305,19 @@ const TXT = {
     webrtc_unsupported: "WebRTC unsupported",
     ipv6_yes: "IPv6 enabled",
     ipv6_no: "IPv6 disabled",
-    websites_accessible: "Websites accessible",
-    websites_blocked: "Websites blocked"
+    connectivity_good: "Good general connectivity",
+    connectivity_medium: "Medium connectivity / some issues",
+    connectivity_bad: "Serious connectivity issues",
+    connectivity_test: "General / CDN / IP Connectivity Test"
   }
 };
 
 let LANG = "fa";
 let running = false;
 let successCount = 0;
-let totalTests = 10; // بروزرسانی شده با تست‌های جدید
+let totalTests = 12;
 let ipDetected = "";
+let abortController = null;
 
 const langSelect = document.getElementById("lang");
 const startBtn = document.getElementById("start");
@@ -319,7 +326,7 @@ const manual = document.getElementById("manual");
 const summary = document.getElementById("summary");
 const summaryContent = document.getElementById("summaryContent");
 
-// لیست منابع جدید برای تست پینگ (کیفیت)
+// منابع تست کیفیت (پینگ)
 const QUALITY_SOURCES = [
   { name: "Google", url: "https://www.google.com/generate_204" },
   { name: "Cloudflare", url: "https://www.cloudflare.com/cdn-cgi/trace" },
@@ -328,23 +335,22 @@ const QUALITY_SOURCES = [
   { name: "OpenWRT", url: "https://downloads.openwrt.org/releases/lastupdate" }
 ];
 
-// لیست وبسایت‌ها برای تست دسترسی
-const WEBSITES = [
-  { name: "Google", url: "https://www.google.com" },
-  { name: "Wikipedia", url: "https://en.wikipedia.org" },
-  { name: "GitHub", url: "https://github.com" },
-  { name: "YouTube", url: "https://www.youtube.com" },
-  { name: "Twitter", url: "https://twitter.com" }
+// منابع تست اتصال عمومی
+const CONNECTIVITY_SOURCES = [
+  { name: "Cloudflare Trace", url: "https://www.cloudflare.com/cdn-cgi/trace", check: text => text.includes("colo=") || text.includes("fl=") },
+  { name: "ipify IPv4", url: "https://api.ipify.org", check: text => text.trim().match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) },
+  { name: "httpbin Get", url: "https://httpbin.org/get", check: json => json && json.origin },
+  { name: "Cloudflare Speed 100KB", url: "https://speed.cloudflare.com/__down?bytes=100000", check: () => true }
 ];
 
-// لیست منابع دانلود اضافی
+// منابع دانلود
 const DOWNLOAD_SOURCES = [
-  { label: "GitHub Raw", url: "https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore" },
-  { label: "jsDelivr lodash", url: "https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js" },
-  { label: "unpkg react", url: "https://unpkg.com/react@18/umd/react.production.min.js" },
+  { label: "GitHub Raw", url: "https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore", maxBytes: 512*1024 },
+  { label: "jsDelivr lodash", url: "https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js", maxBytes: 512*1024 },
+  { label: "unpkg react", url: "https://unpkg.com/react@18/umd/react.production.min.js", maxBytes: 512*1024 },
   { label: "OpenWRT lastupdate", url: "https://downloads.openwrt.org/releases/lastupdate", maxBytes: 128*1024 },
-  { label: "Passwall2 IPK", url: "https://github.com/Openwrt-Passwall/openwrt-passwall2/releases/download/26.2.14-1/luci-app-passwall2_26.2.14-r1_all.ipk" },
-  { label: "Passwall Packages SF", url: "https://sourceforge.net/projects/openwrt-passwall-build/files/releases/packages-24.10/mipsel_74kc/passwall2/Packages/download" },
+  { label: "Passwall2 IPK", url: "https://github.com/Openwrt-Passwall/openwrt-passwall2/releases/download/26.2.14-1/luci-app-passwall2_26.2.14-r1_all.ipk", maxBytes: 512*1024 },
+  { label: "Passwall Packages SF", url: "https://sourceforge.net/projects/openwrt-passwall-build/files/releases/packages-24.10/mipsel_74kc/passwall2/Packages/download", maxBytes: 512*1024 },
   { label: "Cloudflare Speedtest", url: "https://speed.cloudflare.com/__down?bytes=1000000", maxBytes: 1024*1024 },
   { label: "OVH Test File", url: "https://ovh.net/files/1Mio.dat", maxBytes: 1024*1024 }
 ];
@@ -362,7 +368,6 @@ function updateLanguage() {
 langSelect.onchange = e => {
   LANG = e.target.value;
   updateLanguage();
-
   out.innerHTML = "";
   manual.innerHTML = `<h3>${TXT[LANG].manual_title}</h3>`;
   manual.style.display = "none";
@@ -372,7 +377,7 @@ langSelect.onchange = e => {
 
 updateLanguage();
 
-function row(test, status, result, time, size, source) {
+function row(test, status, result, time = "—", size = "—", source = "") {
   const tr = document.createElement("tr");
   tr.innerHTML = `<td>${test}</td><td class="${status}">${TXT[LANG][status] || status}</td><td>${result}</td><td>${time}</td><td>${size}</td><td class="code">${source}</td>`;
   out.appendChild(tr);
@@ -384,16 +389,21 @@ async function timed(fn) {
     const val = await fn();
     return { ok: true, val, ms: Math.round(performance.now() - start) };
   } catch (err) {
-    return { ok: false, ms: Math.round(performance.now() - start) };
+    return { ok: false, err: err.message, ms: Math.round(performance.now() - start) };
   }
 }
 
-async function realDownload(label, url, maxBytes = 512*1024) {
+async function realDownload(label, url, maxBytes) {
+  let effectiveUrl = url;
+  let isProxied = false;
+  const proxy = "https://api.allorigins.win/raw?url=";
+
   const t = await timed(async () => {
-    const c = new AbortController();
+    const c = abortController || new AbortController();
     let read = 0;
-    const res = await fetch(url, { signal: c.signal, cache: "no-store" });
-    if (!res.body) throw new Error("no stream");
+    const res = await fetch(effectiveUrl, { signal: c.signal, cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.body) throw new Error("No stream");
     const reader = res.body.getReader();
     while (true) {
       const { done, value } = await reader.read();
@@ -407,25 +417,58 @@ async function realDownload(label, url, maxBytes = 512*1024) {
   if (t.ok) {
     successCount++;
     const kb = (t.val / 1024).toFixed(1);
-    row(label, "ok", TXT[LANG].download_success, `${t.ms} ms`, `${kb} KB`, url);
+    row(label, "ok", TXT[LANG].download_success + (isProxied ? " (via proxy)" : ""), `${t.ms} ms`, `${kb} KB`, effectiveUrl);
+  } else if (t.err.includes("CORS") || t.err.includes("Access-Control-Allow-Origin")) {
+    // Try with proxy
+    effectiveUrl = proxy + encodeURIComponent(url);
+    isProxied = true;
+    const tProxy = await timed(async () => {
+      const c = abortController || new AbortController();
+      let read = 0;
+      const res = await fetch(effectiveUrl, { signal: c.signal, cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!res.body) throw new Error("No stream");
+      const reader = res.body.getReader();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        read += value ? value.length : 0;
+        if (read >= maxBytes) { c.abort(); break; }
+      }
+      return read;
+    });
+
+    if (tProxy.ok) {
+      successCount++;
+      const kb = (tProxy.val / 1024).toFixed(1);
+      row(label, "ok", TXT[LANG].download_success + " (via proxy)", `${tProxy.ms} ms`, `${kb} KB`, effectiveUrl);
+    } else {
+      row(label, "fail", TXT[LANG].download_fail + ` (${tProxy.err || 'خطا'})`, `${tProxy.ms} ms`, "—", url);
+      addManualLink(label, url);
+    }
   } else {
-    row(label, "fail", TXT[LANG].download_fail, `${t.ms} ms`, "—", url);
-    const div = document.createElement("div");
-    div.innerHTML = `<p>${TXT[LANG].manual_note}</p>`;
-    const a = document.createElement("a");
-    a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.textContent = label;
-    div.appendChild(a);
-    manual.appendChild(div);
-    manual.style.display = "block";
+    row(label, "fail", TXT[LANG].download_fail + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", url);
+    addManualLink(label, url);
   }
+}
+
+function addManualLink(label, url) {
+  const div = document.createElement("div");
+  div.innerHTML = `<p>${TXT[LANG].manual_note}</p>`;
+  const a = document.createElement("a");
+  a.href = url;
+  a.target = "_blank";
+  a.rel = "noopener noreferrer";
+  a.textContent = label;
+  div.appendChild(a);
+  manual.appendChild(div);
+  manual.style.display = "block";
 }
 
 async function ipTest(label, url, expectV6) {
   const t = await timed(async () => {
     const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return (await res.text()).trim();
   });
 
@@ -436,55 +479,81 @@ async function ipTest(label, url, expectV6) {
     row(label, st, TXT[LANG].ip_shown + ip, `${t.ms} ms`, "—", url);
     if (label.includes("IPv4")) ipDetected = ip;
   } else {
-    row(label, "fail", TXT[LANG].no_ip, `${t.ms} ms`, "—", url);
+    row(label, "fail", TXT[LANG].no_ip + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", url);
   }
 }
 
-async function testWebsites() {
-  const label = "تست دسترسی وبسایت‌ها";
+async function testConnectivity() {
+  const label = TXT[LANG].connectivity_test;
   let success = 0;
+  let totalTime = 0;
   let details = [];
-  for (const site of WEBSITES) {
-    const t = await timed(() => fetch(site.url, { cache: "no-store" }));
-    if (t.ok) success++;
-    details.push(`${site.name}: ${t.ok ? "OK" : "Fail"}`);
+
+  for (const src of CONNECTIVITY_SOURCES) {
+    if (!running) break;
+    const t = await timed(async () => {
+      const res = await fetch(src.url, { cache: "no-store", mode: "cors" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const content = await (res.headers.get("content-type")?.includes("json") ? res.json() : res.text());
+      if (src.check && !src.check(content)) throw new Error("Invalid content");
+      return true;
+    });
+
+    const rowStatus = t.ok ? "ok" : "fail";
+    const rowResult = t.ok ? `موفق (${t.ms} ms)` : `ناموفق (${t.ms} ms - ${t.err || 'خطا'})`;
+    row(`↳ ${src.name}`, rowStatus, rowResult, `${t.ms} ms`, "—", src.url);
+
+    if (t.ok) {
+      success++;
+      totalTime += t.ms;
+    }
+    details.push(`${src.name}: ${t.ok ? "OK" : "Fail"}`);
   }
-  const status = success === WEBSITES.length ? "ok" : "fail";
-  row(label, status, success === WEBSITES.length ? TXT[LANG].websites_accessible : TXT[LANG].websites_blocked, "—", "—", details.join(", "));
-  if (success > 0) successCount++;
+
+  const finalStatus = success >= CONNECTIVITY_SOURCES.length ? "ok" : success >= CONNECTIVITY_SOURCES.length / 2 ? "warn" : "fail";
+  const avg = success > 0 ? Math.round(totalTime / success) : "—";
+
+  row(label, finalStatus, 
+    finalStatus === "ok" ? TXT[LANG].connectivity_good :
+    finalStatus === "warn" ? TXT[LANG].connectivity_medium :
+    TXT[LANG].connectivity_bad,
+    "—", "—", `موفق: ${success}/${CONNECTIVITY_SOURCES.length} • میانگین: ${avg} ms`);
+
+  if (success >= CONNECTIVITY_SOURCES.length / 2) successCount++;
 }
 
-async function testQUIC() {
-  const label = "تست QUIC";
-  const url = "https://quic.cloudflare.com:443/"; // سرور QUIC-enabled
-  const t = await timed(() => fetch(url, { cache: "no-store", transport: "quic" })); // نیاز به پشتیبانی مرورگر
-  const status = t.ok ? "ok" : "fail";
-  row(label, status, t.ok ? TXT[LANG].quic_supported : TXT[LANG].quic_unsupported, `${t.ms} ms`, "—", url);
-  if (t.ok) successCount++;
-}
+async function testDNSHijack() {
+  const label = "تست DNS Hijack";
+  const url = "https://dns.google/resolve?name=telegram.org&type=A";
 
-async function testDoH() {
-  const label = "تست DoH";
-  const url = "https://dns.google/resolve?name=example.com&type=A";
-  const t = await timed(() => fetch(url, { cache: "no-store" }));
-  const status = t.ok ? "ok" : "fail";
-  row(label, status, t.ok ? TXT[LANG].doh_supported : TXT[LANG].doh_unsupported, `${t.ms} ms`, "—", url);
-  if (t.ok) successCount++;
-}
+  const t = await timed(async () => {
+    const res = await fetch(url, { cache: "no-store", mode: "cors" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  });
 
-async function testWebRTC() {
-  const label = "تست WebRTC";
-  const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-  pc.createDataChannel('test');
-  const t = await timed(() => new Promise((resolve, reject) => {
-    pc.onicecandidate = e => { if (e.candidate) resolve(); };
-    pc.createOffer().then(o => pc.setLocalDescription(o));
-    setTimeout(reject, 5000);
-  }));
-  const status = t.ok ? "ok" : "fail";
-  row(label, status, t.ok ? TXT[LANG].webrtc_supported : TXT[LANG].webrtc_unsupported, `${t.ms} ms`, "—", "STUN Server");
-  pc.close();
-  if (t.ok) successCount++;
+  let hijacked = false;
+  let resultText = TXT[LANG].dns_hijack_no;
+  let statusClass = "ok";
+
+  if (t.ok && t.val.Answer) {
+    for (const ans of t.val.Answer) {
+      const ip = ans.data;
+      if (ip && (ip.startsWith("10.") || ip.startsWith("192.168.") || ip.startsWith("172.") || ip.startsWith("37.228."))) {
+        hijacked = true;
+        resultText = TXT[LANG].dns_hijack_yes + ` (${ip})`;
+        statusClass = "warn";
+        break;
+      }
+    }
+  } else {
+    resultText = TXT[LANG].dns_error + ` (${t.err || 'خطا'})`;
+    statusClass = "fail";
+  }
+
+  row(label, statusClass, resultText, `${t.ms} ms`, "—", url);
+
+  if (!hijacked && t.ok) successCount++;
 }
 
 async function testIPv6() {
@@ -492,74 +561,117 @@ async function testIPv6() {
   const url = "https://api64.ipify.org";
   const t = await timed(async () => {
     const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.text();
   });
   if (t.ok && t.val.includes(":")) {
-    row(label, "ok", TXT[LANG].ipv6_yes + ": " + t.val, `${t.ms} ms`, "—", url);
+    row(label, "ok", TXT[LANG].ipv6_yes + ": " + t.val.substring(0, 20) + "...", `${t.ms} ms`, "—", url);
     successCount++;
   } else {
-    row(label, "fail", TXT[LANG].ipv6_no, `${t.ms} ms`, "—", url);
+    row(label, "fail", TXT[LANG].ipv6_no + ` (${t.err || ''})`, `${t.ms} ms`, "—", url);
   }
-}
-
-async function testDNSHijack() {
-  const label = "تست DNS Hijack";
-  const url = "https://dns.google/resolve?name=telegram.org&type=A";
-  const t = await timed(async () => {
-    const res = await fetch(url, { cache: "no-store" });
-    return await res.json();
-  });
-  let hijacked = false;
-  if (t.ok && t.val.Answer) {
-    for (const ans of t.val.Answer) {
-      if (ans.data.startsWith("10.") || ans.data.startsWith("192.168.") || ans.data.startsWith("172.")) {
-        hijacked = true;
-        break;
-      }
-    }
-  }
-  const status = hijacked ? "warn" : "ok";
-  row(label, status, hijacked ? TXT[LANG].dns_hijack_yes : TXT[LANG].dns_hijack_no, `${t.ms} ms`, "—", url);
-  if (!hijacked) successCount++;
 }
 
 async function testQuality() {
   const label = "تست کیفیت (پینگ)";
   let totalLatency = 0, count = 0, latencies = [];
+
   for (const src of QUALITY_SOURCES) {
-    const t = await timed(() => fetch(src.url, { cache: "no-store" }));
-    if (t.ok) {
-      totalLatency += t.ms;
-      latencies.push(t.ms);
-      count++;
-    }
+    if (!running) break;
+    const t = await timed(async () => {
+      const res = await fetch(src.url, { cache: "no-store", mode: "no-cors" });
+      return true; // فقط زمان مهم است، status همیشه 0 است
+    });
+
+    const rowStatus = t.ms < 1000 ? "ok" : "warn"; // بر اساس زمان
+    const rowResult = `پینگ (${t.ms} ms)`;
+    row(`↳ ${src.name}`, rowStatus, rowResult, `${t.ms} ms`, "—", src.url);
+
+    totalLatency += t.ms;
+    latencies.push(t.ms);
+    count++;
   }
+
   if (count > 0) {
-    const avg = (totalLatency / count).toFixed(0);
+    const avg = Math.round(totalLatency / count);
     const jitter = latencies.length > 1 ? Math.max(...latencies) - Math.min(...latencies) : 0;
     let status = "ok", result = TXT[LANG].quality_good;
     if (avg > 200) { status = "warn"; result = TXT[LANG].quality_poor; }
     else if (avg > 100) { status = "warn"; result = TXT[LANG].quality_average; }
     row(label, status, result + `: ${TXT[LANG].ping} ${avg}ms, ${TXT[LANG].jitter} ${jitter}ms`, "—", "—", "Multiple Servers");
-    successCount++;
+    if (status !== "fail") successCount++;
   } else {
     row(label, "fail", TXT[LANG].quality_failed, "—", "—", "Multiple Servers");
   }
+}
+
+async function testQUIC() {
+  const label = "تست QUIC";
+  const url = "https://quic.nginx.org/";
+
+  const t = await timed(async () => {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const entry = performance.getEntriesByName(url)[0];
+    if (!entry) throw new Error("No performance entry");
+    const protocol = entry.nextHopProtocol || '';
+    if (protocol === 'h3' || protocol.includes('quic')) {
+      return protocol;
+    }
+    throw new Error("Not using QUIC: " + protocol);
+  });
+
+  const status = t.ok ? "ok" : "fail";
+  row(label, status, t.ok ? TXT[LANG].quic_supported + ` (${t.val})` : TXT[LANG].quic_unsupported + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", url);
+  if (t.ok) successCount++;
+}
+
+async function testDoH() {
+  const label = "تست DoH";
+  const url = "https://dns.google/resolve?name=example.com&type=A";
+  const t = await timed(async () => {
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    if (!data.Answer) throw new Error("Invalid DoH response");
+    return true;
+  });
+  const status = t.ok ? "ok" : "fail";
+  row(label, status, t.ok ? TXT[LANG].doh_supported : TXT[LANG].doh_unsupported + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", url);
+  if (t.ok) successCount++;
+}
+
+async function testWebRTC() {
+  const label = "تست WebRTC";
+  const t = await timed(async () => {
+    const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+    pc.createDataChannel('test');
+    return new Promise((resolve, reject) => {
+      let done = false;
+      pc.onicecandidate = e => { if (e.candidate && !done) { done = true; pc.close(); resolve(true); } };
+      pc.onicegatheringstatechange = () => { if (pc.iceGatheringState === 'complete' && !done) { done = true; pc.close(); resolve(true); } };
+      setTimeout(() => { if (!done) { pc.close(); reject(new Error("Timeout")); } }, 5000);
+      pc.createOffer().then(o => pc.setLocalDescription(o));
+    });
+  });
+  const status = t.ok ? "ok" : "fail";
+  row(label, status, t.ok ? TXT[LANG].webrtc_supported : TXT[LANG].webrtc_unsupported + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", "STUN Server");
+  if (t.ok) successCount++;
 }
 
 function showSummary() {
   summary.style.display = "block";
   let text = "";
 
-  if (successCount >= 8) {
+  if (successCount >= 10) {
     text += `<p>${TXT[LANG].summary_good}</p>`;
-  } else if (successCount >= 4) {
+  } else if (successCount >= 5) {
     text += `<p>${TXT[LANG].summary_medium}</p>`;
   } else {
     text += `<p>${TXT[LANG].summary_bad}</p>`;
   }
 
-  text += `<p>${TXT[LANG].summary_ip.replace(/\[IP\]/g, ipDetected)}</p>`;
+  text += `<p>${TXT[LANG].summary_ip.replace(/\[IP\]/g, ipDetected || "نامشخص")}</p>`;
   text += `<p>${TXT[LANG].summary_success_count.replace("[COUNT]", successCount).replace("[TOTAL]", totalTests)}</p>`;
 
   if (successCount < totalTests) {
@@ -578,33 +690,41 @@ async function run() {
   manual.style.display = "none";
   summary.style.display = "none";
   running = true;
+  abortController = new AbortController();
   startBtn.textContent = TXT[LANG].stop;
   startBtn.classList.add("stop");
   langSelect.disabled = true;
 
   await ipTest(TXT[LANG].ipv4, "https://api.ipify.org", false);
-  await testIPv6(); // تست IPv6 بروزرسانی شده
+  await testIPv6();
   await testDNSHijack();
   await testQuality();
-  await testWebsites();
+  await testConnectivity();
   await testQUIC();
   await testDoH();
   await testWebRTC();
 
   for (const src of DOWNLOAD_SOURCES) {
-    await realDownload(src.label, src.url, src.maxBytes || 512*1024);
+    if (!running) break;
+    await realDownload(src.label, src.url, src.maxBytes);
   }
 
   showSummary();
 
   running = false;
+  abortController = null;
   langSelect.disabled = false;
   startBtn.textContent = TXT[LANG].start;
   startBtn.classList.remove("stop");
 }
 
 startBtn.onclick = () => {
-  if (!running) run();
+  if (running) {
+    running = false;
+    if (abortController) abortController.abort();
+  } else {
+    run();
+  }
 };
 </script>
 </body>
