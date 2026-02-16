@@ -1,17 +1,6 @@
 <div dir="rtl">
 
 # ابزار بررسی کیفیت و محدودیت اینترنت ایران  
-**IRAN Internet Quality Tester** (web version)
-
-</div>
-
-<div dir="ltr" align="center">
-
-[![GitHub license](https://img.shields.io/github/license/saeed9400/IRAN_Internet_Quality?style=flat-square)](https://github.com/saeed9400/IRAN_Internet_Quality/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/saeed9400/IRAN_Internet_Quality?style=flat-square)](https://github.com/saeed9400/IRAN_Internet_Quality/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/saeed9400/IRAN_Internet_Quality?style=flat-square)](https://github.com/saeed9400/IRAN_Internet_Quality/issues)
-
-</div>
 
 <div align="center">
   
@@ -104,5 +93,17 @@
 <div dir="rtl" align="center">
 
 با تشکر از همه کسانی که در بهبود وضعیت اینترنت ایران تلاش می‌کنند.
+
+</div>
+
+**IRAN Internet Quality Tester** (web version)
+
+</div>
+
+<div dir="ltr" align="center">
+
+[![GitHub license](https://img.shields.io/github/license/saeed9400/IRAN_Internet_Quality?style=flat-square)](https://github.com/saeed9400/IRAN_Internet_Quality/blob/main/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/saeed9400/IRAN_Internet_Quality?style=flat-square)](https://github.com/saeed9400/IRAN_Internet_Quality/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/saeed9400/IRAN_Internet_Quality?style=flat-square)](https://github.com/saeed9400/IRAN_Internet_Quality/issues)
 
 </div>
