@@ -1,7 +1,7 @@
 <div dir="rtl">
 
 # ابزار بررسی کیفیت و محدودیت اینترنت ایران  
-**IRAN Internet Quality Tester** (نسخه وب)
+**IRAN Internet Quality Tester** (web version)
 
 </div>
 
@@ -17,8 +17,8 @@
 
 | نسخه              | توضیحات                              | لینک مستقیم                                                                 |
 |:-------------------:|:--------------------------------------:|-----------------------------------------------------------------------------:|
-| نسخه ۱ (اصلی)     | تست دانلود واقعی + مسیر IPv4/IPv6   | [https://saeed9400.github.io/IRAN_Internet_Quality/](https://saeed9400.github.io/IRAN_Internet_Quality/)     |
-| نسخه ۲ (پیشرفته) | تست جامع + پینگ + QUIC + DoH + WebRTC + DNS Hijack + اتصال عمومی | [https://saeed9400.github.io/IRAN_Internet_Quality/v2](https://saeed9400.github.io/IRAN_Internet_Quality/v2) |
+| نسخه ۱ (اصلی)     | تست دانلود واقعی + مسیر IPv4/IPv6   | [IRAN_Internet_Quality 1nd Version](https://saeed9400.github.io/IRAN_Internet_Quality/v1)     |
+| نسخه ۲ (پیشرفته) | تست جامع + پینگ + QUIC + DoH + WebRTC + DNS Hijack + اتصال عمومی | [IRAN_Internet_Quality 2nd Version](https://saeed9400.github.io/IRAN_Internet_Quality/v2) |
 
 ---
 
