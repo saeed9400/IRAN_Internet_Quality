@@ -12,7 +12,6 @@
 
 <div align="center">
   
-  <img src="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/main/data/IRAN_Internet_Quality.png" alt="IRAN Internet Quality Check" width="50%">
 
   
 | لینک صفحه             | توضیحات                                                                                              |
