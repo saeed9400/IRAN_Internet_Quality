@@ -18,7 +18,7 @@
 | نسخه              | توضیحات                              | لینک مستقیم                                                                 |
 |:-------------------:|:--------------------------------------:|-----------------------------------------------------------------------------:|
 | نسخه ۱ (اصلی)     | تست دانلود واقعی + مسیر IPv4/IPv6   | [IRAN Internet Quality (1nd Version)](https://saeed9400.github.io/IRAN_Internet_Quality/v1)     |
-| نسخه ۲ (پیشرفته) | تست جامع + پینگ + QUIC + DoH + WebRTC + DNS Hijack + اتصال عمومی | [(IRAN Internet Quality (2nd Version](https://saeed9400.github.io/IRAN_Internet_Quality/v2) |
+| نسخه ۲ (پیشرفته) | تست جامع + پینگ + QUIC + DoH + WebRTC + DNS Hijack + اتصال عمومی | [IRAN Internet Quality (2nd Version)](https://saeed9400.github.io/IRAN_Internet_Quality/v2) |
 
 ---
 
