@@ -6,7 +6,6 @@
   <title data-lang-key="title">ابزار بررسی کیفیت اینترنت – نسخه دوم وب</title>
   <link rel="icon" href="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/refs/heads/main/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@33.003/Vazirmatn-font-face.css">
-
   <style>
     :root {
       --bg: #0a0a0f;
@@ -50,8 +49,16 @@
       font-size: 1.05rem;
     }
     button:hover { background: #818cf8; }
-    button.stop { background: var(--danger); }
-    button.stop:hover { background: #f87171; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .timer {
+      display: inline-block;
+      margin-right: 1rem;
+      padding: 0.5rem 1rem;
+      background: #1e2338;
+      border-radius: 20px;
+      font-family: monospace;
+      font-size: 1.1rem;
+    }
     select {
       padding: 0.65rem;
       border-radius: 8px;
@@ -81,6 +88,7 @@
     .ok { color: var(--success); font-weight: bold; }
     .fail { color: var(--danger); }
     .warn { color: var(--warning); }
+    .info { color: var(--muted); font-style: italic; }
     .code { font-family: monospace; direction: ltr; word-break: break-all; font-size: 0.85rem; background: #0d1117; padding: 0.3rem 0.6rem; border-radius: 6px; }
     .manual-links {
       margin: 1rem 0;
@@ -137,24 +145,25 @@
   </style>
 </head>
 <body>
-
 <header>
   <h1 data-lang-key="title">ابزار بررسی کیفیت اینترنت – نسخه دوم وب</h1>
 </header>
-
 <main>
   <div class="card">
     <p data-lang-key="desc">
       در این ابزار <b>دانلود واقعی فایل</b> انجام می‌شود.<br>
       بعد از اتمام تست، نتیجه نهایی کیفیت اینترنت شما نمایش داده می‌شود.
     </p>
-    <div>
-      <label data-lang-key="lang_label">زبان / Language:</label>
-      <select id="lang">
-        <option value="fa" selected>فارسی</option>
-        <option value="en">English</option>
-      </select>
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <div>
+        <label data-lang-key="lang_label">زبان / Language:</label>
+        <select id="lang">
+          <option value="fa" selected>فارسی</option>
+          <option value="en">English</option>
+        </select>
+      </div>
       <button id="start" data-lang-key="start">شروع تست</button>
+      <span id="timer" class="timer" style="display: none;">⏱️ 0:00</span>
     </div>
   </div>
 
@@ -196,14 +205,13 @@
 </footer>
 
 <script>
-// ترجمه‌ها
+// ترجمه‌های کامل دو زبانه
 const TXT = {
   fa: {
     title: "ابزار بررسی کیفیت اینترنت – نسخه دوم وب",
     desc: "در این ابزار <b>دانلود واقعی فایل</b> انجام می‌شود.<br>بعد از اتمام تست، نتیجه نهایی کیفیت اینترنت شما نمایش داده می‌شود.",
     lang_label: "زبان / Language:",
     start: "شروع تست",
-    stop: "توقف تست",
     th_test: "تست",
     th_status: "وضعیت",
     th_result: "نتیجه",
@@ -213,53 +221,102 @@ const TXT = {
     ok: "موفق",
     fail: "ناموفق",
     warn: "هشدار",
+    info: "اطلاعات بیشتر",
+    
+    // پیام‌های دانلود
     download_success: "دانلود واقعی انجام شد",
     download_fail: "مسدود توسط مرورگر (CORS) – لطفاً روی لینک دستی کلیک کنید",
+    download_unavailable: "تست مستقیم امکان‌پذیر نیست - لینک دستی",
+    server_available: "سرور در دسترس (HEAD)",
+    
+    // آی‌پی
     no_ip: "عدم دریافت IP",
     ip_shown: "IP مشاهده‌شده: ",
     ipv4: "مسیر IPv4",
     ipv6: "مسیر IPv6",
+    ipv4_fallback: "IPv4 جایگزین",
+    ipv6_yes: "IPv6 فعال است",
+    ipv6_no: "IPv6 غیرفعال است",
+    
+    // فوتر
     footer_cors: "دانلودهایی که به دلیل CORS بلاک می‌شوند، به‌عنوان «مسدود توسط مرورگر» گزارش می‌شوند.",
     footer_success: "اگر دانلود واقعی انجام شد → مسیر دانلود شما باز است.",
-    manual_title: "لینک‌های دانلود دستی (در صورت بلاک fetch)",
-    manual_note: "روی لینک کلیک کنید و دانلود را دستی انجام دهید تا وضعیت سرور مشخص شود.",
-    summary_title: "نتیجه نهایی کیفیت اینترنت شما",
-    summary_good: "کیفیت اینترنت شما <strong>خوب</strong> است.<br>مسیرهای اصلی تست‌شده باز هستند و دانلودها با سرعت قابل قبول انجام شدند.",
-    summary_medium: "کیفیت اینترنت شما <strong>متوسط</strong> است.<br>بعضی مسیرها باز هستند، اما برخی به دلیل محدودیت مرورگر یا سرور بلاک شدند.",
-    summary_bad: "کیفیت اینترنت شما <strong>پایین یا محدود</strong> است.<br>بیشتر مسیرها بلاک شدند – ممکن است نیاز به ابزار دور زدن داشته باشید.",
-    summary_ip: "IP شما: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a> – این لینک را باز کنید تا مکان و نوع اتصال مشخص شود.",
-    summary_success_count: "دانلودهای موفق: [COUNT] از [TOTAL]",
-    summary_manual: "برای اطمینان، حتماً لینک‌های دستی را هم تست کنید. اگر دانلود دستی هم شروع نشد، مسیر واقعاً محدود است.",
-    cors_note: "برخی تست‌ها به دلیل محدودیت مرورگر (CORS) ناموفق بودند. حتماً لینک‌های دستی را چک کنید.",
     github: "پروژه در GitHub",
-    dns_hijack_yes: "DNS Hijack تشخیص داده شد",
-    dns_hijack_no: "بدون DNS Hijack",
+    
+    // لینک‌های دستی
+    manual_title: "لینک‌های دانلود دستی (برای تست‌هایی که مستقیم امکان‌پذیر نیست)",
+    manual_note: "روی لینک کلیک کنید و دانلود را دستی انجام دهید تا وضعیت سرور مشخص شود.",
+    
+    // خلاصه نهایی
+    summary_title: "نتیجه نهایی کیفیت اینترنت شما",
+    summary_good: "کیفیت اینترنت شما <strong>خوب</strong> است.<br>مسیرهای اصلی تست‌شده باز هستند.",
+    summary_medium: "کیفیت اینترنت شما <strong>متوسط</strong> است.<br>بعضی مسیرها باز هستند، اما محدودیت‌هایی وجود دارد.",
+    summary_bad: "کیفیت اینترنت شما <strong>پایین یا محدود</strong> است.<br>بیشتر مسیرها بلاک شدند.",
+    summary_ip: "IP شما: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a>",
+    summary_success_count: "دانلودهای موفق: [COUNT] از [TOTAL] (تست‌های واقعی)",
+    summary_ipv6_note: " IPv6 واقعی شناسایی نشد - اتصال شما از طریق IPv4 است",
+    summary_ipv6_success: " IPv6 واقعی فعال است",
+    summary_cors_note: " برخی تست‌ها به دلیل محدودیت CORS ناموفق بودند - لینک‌های دستی را چک کنید",
+    summary_manual: "برای اطمینان، لینک‌های دستی را تست کنید.",
+    summary_timeout_note: " برخی سرورها زمان پاسخ‌دهی طولانی دارند یا مسدود هستند",
+    
+    // تست‌های اختصاصی
+    dns_hijack_test: "تست ربودن DNS",
+    dns_hijack_yes: "ربودن DNS تشخیص داده شد",
+    dns_hijack_no: "بدون ربودن DNS",
     dns_error: "خطا در دریافت پاسخ DNS",
+    dns_timeout: "DNS Server Timeout - احتمال فیلتر یا اختلال",
+    
+    quality_test: "نتیجه بررسی کیفیت (پینگ)",
     quality_good: "کیفیت خوب",
     quality_average: "کیفیت متوسط",
     quality_poor: "کیفیت ضعیف",
     quality_failed: "تست ناموفق",
     ping: "پینگ متوسط",
-    jitter: "جتر",
+    jitter: "جیتر",
+    
+    quic_test: "تست QUIC",
     quic_supported: "QUIC پشتیبانی می‌شود",
     quic_unsupported: "QUIC پشتیبانی نمی‌شود",
+    quic_cors_blocked: "QUIC - مسدود توسط مرورگر (CORS)",
+    
+    doh_test: "تست DoH",
     doh_supported: "DoH پشتیبانی می‌شود",
     doh_unsupported: "DoH پشتیبانی نمی‌شود",
+    doh_timeout: "DoH Server Timeout",
+    
+    webrtc_test: "تست WebRTC",
     webrtc_supported: "WebRTC پشتیبانی می‌شود",
     webrtc_unsupported: "WebRTC پشتیبانی نمی‌شود",
-    ipv6_yes: "IPv6 فعال است",
-    ipv6_no: "IPv6 غیرفعال است",
+    
+    connectivity_test: "تست اتصال عمومی / CDN / IP",
     connectivity_good: "اتصال عمومی خوب",
     connectivity_medium: "اتصال متوسط / برخی مشکلات",
     connectivity_bad: "مشکل جدی در اتصال عمومی",
-    connectivity_test: "تست اتصال عمومی / CDN / IP"
+    
+    // برچسب‌های منابع
+    ping_google: "پینگ گوگل",
+    ping_cloudflare: "پینگ کلادفلر",
+    ping_wikipedia: "پینگ ویکی‌پدیا",
+    ping_github: "پینگ گیت‌هاب",
+    ping_openwrt: "پینگ OpenWRT",
+    cf_trace: "ردیابی کلادفلر",
+    ipify_ipv4: "آی‌پی IPv4",
+    httpbin_get: "HTTPBin GET",
+    cf_speed_100kb: "تست دانلود ۱۰۰کیلوبایت کلادفلر",
+    cf_speed_1mb: "تست دانلود ۱مگابایت کلادفلر",
+    jsdelivr: "jsDelivr lodash",
+    openwrt_lastupdate: "OpenWRT آخرین بروزرسانی",
+    unpkg_react: "unpkg react (اطلاعاتی)",
+    ovh_test: "OVH فایل تست",
+    github_passwall: "Passwall2 IPK (گیت‌هاب)",
+    sourceforge_passwall: "Passwall Packages (سورس‌فورج)"
   },
   en: {
     title: "Internet Quality Tester – Web 2nd Version",
     desc: "This tool performs <b>real file download</b>.<br>After the test, a final summary of your internet quality will be shown.",
     lang_label: "Language:",
     start: "Start Test",
-    stop: "Stop Test",
     th_test: "Test",
     th_status: "Status",
     th_result: "Result",
@@ -269,58 +326,105 @@ const TXT = {
     ok: "OK",
     fail: "Fail",
     warn: "Warning",
+    info: "Info",
+    
     download_success: "Real download completed",
-    download_fail: "Blocked by browser (CORS) – please click manual link",
+    download_fail: "Blocked by browser (CORS) – click manual link",
+    download_unavailable: "Direct test unavailable - manual link",
+    server_available: "Server reachable (HEAD)",
+    
     no_ip: "Failed to get IP",
     ip_shown: "Visible IP: ",
     ipv4: "IPv4 Route",
     ipv6: "IPv6 Route",
+    ipv4_fallback: "IPv4 Fallback",
+    ipv6_yes: "IPv6 enabled",
+    ipv6_no: "IPv6 disabled",
+    
     footer_cors: "Downloads blocked by CORS are reported as «Blocked by browser».",
     footer_success: "If real download succeeded → your download path is open.",
-    manual_title: "Manual Download Links (if fetch blocked)",
-    manual_note: "Click the link and download manually to check server accessibility.",
-    summary_title: "Final Internet Quality Summary",
-    summary_good: "Your internet quality is <strong>good</strong>.<br>Main tested paths are open and download speeds are acceptable.",
-    summary_medium: "Your internet quality is <strong>medium</strong>.<br>Some paths work, but others are blocked by browser/server restrictions.",
-    summary_bad: "Your internet quality is <strong>low or restricted</strong>.<br>Most paths are blocked – you may need better circumvention tools.",
-    summary_ip: "Your IP: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a> – Open this link to check location and connection type.",
-    summary_success_count: "Successful downloads: [COUNT] of [TOTAL]",
-    summary_manual: "For certainty, test the manual links. If manual download also fails, the path is truly restricted.",
-    cors_note: "Some tests failed due to browser restrictions (CORS). Please check the manual links.",
     github: "Project on GitHub",
+    
+    manual_title: "Manual Download Links (for tests that cannot be done directly)",
+    manual_note: "Click the link and download manually to check server accessibility.",
+    
+    summary_title: "Final Internet Quality Summary",
+    summary_good: "Your internet quality is <strong>good</strong>.<br>Main tested paths are open.",
+    summary_medium: "Your internet quality is <strong>medium</strong>.<br>Some paths work, but there are restrictions.",
+    summary_bad: "Your internet quality is <strong>low or restricted</strong>.<br>Most paths are blocked.",
+    summary_ip: "Your IP: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a>",
+    summary_success_count: "Successful downloads: [COUNT] of [TOTAL] (real tests)",
+    summary_ipv6_note: " No native IPv6 detected - your connection uses IPv4",
+    summary_ipv6_success: " Native IPv6 is active",
+    summary_cors_note: " Some tests failed due to CORS - check manual links",
+    summary_manual: "For certainty, test the manual links.",
+    summary_timeout_note: " Some servers are timing out or blocked",
+    
+    dns_hijack_test: "DNS Hijack Test",
     dns_hijack_yes: "DNS Hijack detected",
     dns_hijack_no: "No DNS Hijack",
     dns_error: "Error getting DNS response",
+    dns_timeout: "DNS Server Timeout - Possible filtering",
+    
+    quality_test: "Quality Test (Ping)",
     quality_good: "Good quality",
     quality_average: "Average quality",
     quality_poor: "Poor quality",
     quality_failed: "Test failed",
     ping: "Average ping",
     jitter: "Jitter",
+    
+    quic_test: "QUIC Test",
     quic_supported: "QUIC supported",
     quic_unsupported: "QUIC unsupported",
+    quic_cors_blocked: "QUIC - Blocked by CORS",
+    
+    doh_test: "DoH Test",
     doh_supported: "DoH supported",
     doh_unsupported: "DoH unsupported",
+    doh_timeout: "DoH Server Timeout",
+    
+    webrtc_test: "WebRTC Test",
     webrtc_supported: "WebRTC supported",
     webrtc_unsupported: "WebRTC unsupported",
-    ipv6_yes: "IPv6 enabled",
-    ipv6_no: "IPv6 disabled",
+    
+    connectivity_test: "General / CDN / IP Connectivity Test",
     connectivity_good: "Good general connectivity",
     connectivity_medium: "Medium connectivity / some issues",
     connectivity_bad: "Serious connectivity issues",
-    connectivity_test: "General / CDN / IP Connectivity Test"
+    
+    ping_google: "Google ping",
+    ping_cloudflare: "Cloudflare ping",
+    ping_wikipedia: "Wikipedia ping",
+    ping_github: "GitHub ping",
+    ping_openwrt: "OpenWRT ping",
+    cf_trace: "Cloudflare Trace",
+    ipify_ipv4: "IPv4 Address",
+    httpbin_get: "HTTPBin GET",
+    cf_speed_100kb: "Cloudflare 100KB download test",
+    cf_speed_1mb: "Cloudflare 1MB download test",
+    jsdelivr: "jsDelivr lodash",
+    openwrt_lastupdate: "OpenWRT lastupdate",
+    unpkg_react: "unpkg react (info)",
+    ovh_test: "OVH test file",
+    github_passwall: "Passwall2 IPK (GitHub)",
+    sourceforge_passwall: "Passwall Packages (SourceForge)"
   }
 };
 
 let LANG = "fa";
 let running = false;
 let successCount = 0;
-let totalTests = 12;
+let totalRealTests = 0;
 let ipDetected = "";
+let ipv6Real = false;
 let abortController = null;
+let timerInterval = null;
+let secondsElapsed = 0;
 
 const langSelect = document.getElementById("lang");
 const startBtn = document.getElementById("start");
+const timerEl = document.getElementById("timer");
 const out = document.getElementById("out");
 const manual = document.getElementById("manual");
 const summary = document.getElementById("summary");
@@ -328,31 +432,27 @@ const summaryContent = document.getElementById("summaryContent");
 
 // منابع تست کیفیت (پینگ)
 const QUALITY_SOURCES = [
-  { name: "Google", url: "https://www.google.com/generate_204" },
-  { name: "Cloudflare", url: "https://www.cloudflare.com/cdn-cgi/trace" },
-  { name: "Wikipedia", url: "https://en.wikipedia.org/api/rest_v1/page/random/title" },
-  { name: "GitHub", url: "https://api.github.com" },
-  { name: "OpenWRT", url: "https://downloads.openwrt.org/releases/lastupdate" }
+  { nameKey: "ping_google", url: "https://www.google.com/generate_204" },
+  { nameKey: "ping_cloudflare", url: "https://www.cloudflare.com/cdn-cgi/trace" },
+  { nameKey: "ping_wikipedia", url: "https://en.wikipedia.org/api/rest_v1/page/random/title" },
+  { nameKey: "ping_github", url: "https://api.github.com" },
+  { nameKey: "ping_openwrt", url: "https://downloads.openwrt.org/releases/lastupdate" }
 ];
 
 // منابع تست اتصال عمومی
 const CONNECTIVITY_SOURCES = [
-  { name: "Cloudflare Trace", url: "https://www.cloudflare.com/cdn-cgi/trace", check: text => text.includes("colo=") || text.includes("fl=") },
-  { name: "ipify IPv4", url: "https://api.ipify.org", check: text => text.trim().match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) },
-  { name: "httpbin Get", url: "https://httpbin.org/get", check: json => json && json.origin },
-  { name: "Cloudflare Speed 100KB", url: "https://speed.cloudflare.com/__down?bytes=100000", check: () => true }
+  { nameKey: "cf_trace", url: "https://www.cloudflare.com/cdn-cgi/trace", check: text => text.includes("colo=") || text.includes("fl=") },
+  { nameKey: "ipify_ipv4", url: "https://api.ipify.org", check: text => text.trim().match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/) },
+  { nameKey: "httpbin_get", url: "https://httpbin.org/get", check: json => json && json.origin },
+  { nameKey: "cf_speed_100kb", url: "https://speed.cloudflare.com/__down?bytes=100000", check: () => true }
 ];
 
 // منابع دانلود
 const DOWNLOAD_SOURCES = [
-  { label: "GitHub Raw", url: "https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore", maxBytes: 512*1024 },
-  { label: "jsDelivr lodash", url: "https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js", maxBytes: 512*1024 },
-  { label: "unpkg react", url: "https://unpkg.com/react@18/umd/react.production.min.js", maxBytes: 512*1024 },
-  { label: "OpenWRT lastupdate", url: "https://downloads.openwrt.org/releases/lastupdate", maxBytes: 128*1024 },
-  { label: "Passwall2 IPK", url: "https://github.com/Openwrt-Passwall/openwrt-passwall2/releases/download/26.2.14-1/luci-app-passwall2_26.2.14-r1_all.ipk", maxBytes: 512*1024 },
-  { label: "Passwall Packages SF", url: "https://sourceforge.net/projects/openwrt-passwall-build/files/releases/packages-24.10/mipsel_74kc/passwall2/Packages/download", maxBytes: 512*1024 },
-  { label: "Cloudflare Speedtest", url: "https://speed.cloudflare.com/__down?bytes=1000000", maxBytes: 1024*1024 },
-  { label: "OVH Test File", url: "https://ovh.net/files/1Mio.dat", maxBytes: 1024*1024 }
+  { labelKey: "jsdelivr", url: "https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js", maxBytes: 512*1024, isReal: true },
+  { labelKey: "openwrt_lastupdate", url: "https://downloads.openwrt.org/releases/lastupdate", maxBytes: 128*1024, isReal: true },
+  { labelKey: "unpkg_react", url: "https://unpkg.com/react@18/umd/react.production.min.js", maxBytes: 512*1024, isReal: false },
+  { labelKey: "cf_speed_1mb", url: "https://speed.cloudflare.com/__down?bytes=1000000", maxBytes: 1024*1024, isReal: true }
 ];
 
 function updateLanguage() {
@@ -362,112 +462,87 @@ function updateLanguage() {
     const k = el.getAttribute("data-lang-key");
     if (TXT[LANG][k]) el.innerHTML = TXT[LANG][k];
   });
-  startBtn.textContent = running ? TXT[LANG].stop : TXT[LANG].start;
+  if (!running) startBtn.textContent = TXT[LANG].start;
 }
 
 langSelect.onchange = e => {
   LANG = e.target.value;
   updateLanguage();
-  out.innerHTML = "";
-  manual.innerHTML = `<h3>${TXT[LANG].manual_title}</h3>`;
-  manual.style.display = "none";
-  summary.style.display = "none";
-  summaryContent.innerHTML = "";
+  resetUI();
 };
 
 updateLanguage();
 
-function row(test, status, result, time = "—", size = "—", source = "") {
+function resetUI() {
+  out.innerHTML = "";
+  manual.innerHTML = `<h3>${TXT[LANG].manual_title}</h3><p>${TXT[LANG].manual_note}</p>`;
+  manual.style.display = "none";
+  summary.style.display = "none";
+  summaryContent.innerHTML = "";
+}
+
+function startTimer() {
+  secondsElapsed = 0;
+  timerEl.style.display = "inline-block";
+  timerEl.textContent = `⏱️ 0:00`;
+  timerInterval = setInterval(() => {
+    secondsElapsed++;
+    const mins = Math.floor(secondsElapsed / 60);
+    const secs = secondsElapsed % 60;
+    timerEl.textContent = `⏱️ ${mins}:${secs.toString().padStart(2, '0')}`;
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  timerEl.style.display = "none";
+}
+
+function row(test, status, result, time = "—", size = "—", source = "", statusClass = null) {
   const tr = document.createElement("tr");
-  tr.innerHTML = `<td>${test}</td><td class="${status}">${TXT[LANG][status] || status}</td><td>${result}</td><td>${time}</td><td>${size}</td><td class="code">${source}</td>`;
+  const finalStatusClass = statusClass || (status === "ok" ? "ok" : status === "fail" ? "fail" : status === "info" ? "info" : "warn");
+  const statusText = TXT[LANG][status] || status;
+  tr.innerHTML = `<td>${test}</td><td class="${finalStatusClass}">${statusText}</td><td>${result}</td><td>${time}</td><td>${size}</td><td class="code">${source}</td>`;
   out.appendChild(tr);
 }
 
-async function timed(fn) {
+async function timed(fn, timeout = 8000) {
   const start = performance.now();
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
   try {
-    const val = await fn();
+    const val = await fn(controller.signal);
+    clearTimeout(timeoutId);
     return { ok: true, val, ms: Math.round(performance.now() - start) };
   } catch (err) {
-    return { ok: false, err: err.message, ms: Math.round(performance.now() - start) };
-  }
-}
-
-async function realDownload(label, url, maxBytes) {
-  let effectiveUrl = url;
-  let isProxied = false;
-  const proxy = "https://api.allorigins.win/raw?url=";
-
-  const t = await timed(async () => {
-    const c = abortController || new AbortController();
-    let read = 0;
-    const res = await fetch(effectiveUrl, { signal: c.signal, cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    if (!res.body) throw new Error("No stream");
-    const reader = res.body.getReader();
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      read += value ? value.length : 0;
-      if (read >= maxBytes) { c.abort(); break; }
+    clearTimeout(timeoutId);
+    let errorMsg = err.message;
+    if (err.name === 'AbortError') {
+      errorMsg = 'Timeout';
     }
-    return read;
-  });
-
-  if (t.ok) {
-    successCount++;
-    const kb = (t.val / 1024).toFixed(1);
-    row(label, "ok", TXT[LANG].download_success + (isProxied ? " (via proxy)" : ""), `${t.ms} ms`, `${kb} KB`, effectiveUrl);
-  } else if (t.err.includes("CORS") || t.err.includes("Access-Control-Allow-Origin")) {
-    // Try with proxy
-    effectiveUrl = proxy + encodeURIComponent(url);
-    isProxied = true;
-    const tProxy = await timed(async () => {
-      const c = abortController || new AbortController();
-      let read = 0;
-      const res = await fetch(effectiveUrl, { signal: c.signal, cache: "no-store" });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      if (!res.body) throw new Error("No stream");
-      const reader = res.body.getReader();
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        read += value ? value.length : 0;
-        if (read >= maxBytes) { c.abort(); break; }
-      }
-      return read;
-    });
-
-    if (tProxy.ok) {
-      successCount++;
-      const kb = (tProxy.val / 1024).toFixed(1);
-      row(label, "ok", TXT[LANG].download_success + " (via proxy)", `${tProxy.ms} ms`, `${kb} KB`, effectiveUrl);
-    } else {
-      row(label, "fail", TXT[LANG].download_fail + ` (${tProxy.err || 'خطا'})`, `${tProxy.ms} ms`, "—", url);
-      addManualLink(label, url);
-    }
-  } else {
-    row(label, "fail", TXT[LANG].download_fail + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", url);
-    addManualLink(label, url);
+    return { ok: false, err: errorMsg, ms: Math.round(performance.now() - start) };
   }
 }
 
 function addManualLink(label, url) {
-  const div = document.createElement("div");
-  div.innerHTML = `<p>${TXT[LANG].manual_note}</p>`;
-  const a = document.createElement("a");
-  a.href = url;
-  a.target = "_blank";
-  a.rel = "noopener noreferrer";
-  a.textContent = label;
-  div.appendChild(a);
-  manual.appendChild(div);
+  const linkContainer = document.createElement("div");
+  const link = document.createElement("a");
+  link.href = url;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.textContent = label;
+  linkContainer.appendChild(link);
+  manual.appendChild(linkContainer);
   manual.style.display = "block";
 }
 
-async function ipTest(label, url, expectV6) {
-  const t = await timed(async () => {
-    const res = await fetch(url, { cache: "no-store" });
+async function ipTest(labelKey, url, expectV6) {
+  const t = await timed(async (signal) => {
+    const res = await fetch(url, { signal, cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return (await res.text()).trim();
   });
@@ -475,121 +550,128 @@ async function ipTest(label, url, expectV6) {
   if (t.ok) {
     const ip = t.val;
     const isV6 = ip.includes(":");
-    const st = (isV6 === expectV6) ? "ok" : "warn";
-    row(label, st, TXT[LANG].ip_shown + ip, `${t.ms} ms`, "—", url);
-    if (label.includes("IPv4")) ipDetected = ip;
+    
+    if (expectV6) {
+      ipv6Real = isV6;
+      const status = isV6 ? "ok" : "info";
+      const result = isV6 ? TXT[LANG].ipv6_yes : `${TXT[LANG].ipv4_fallback}: ${ip}`;
+      const statusClass = isV6 ? "ok" : "info";
+      row(TXT[LANG][labelKey], status, result, `${t.ms} ms`, "—", url, statusClass);
+    } else {
+      ipDetected = ip;
+      row(TXT[LANG][labelKey], "ok", TXT[LANG].ip_shown + ip, `${t.ms} ms`, "—", url);
+    }
   } else {
-    row(label, "fail", TXT[LANG].no_ip + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", url);
+    row(TXT[LANG][labelKey], "fail", TXT[LANG].no_ip + (t.err ? ` (${t.err})` : ''), `${t.ms} ms`, "—", url);
   }
 }
 
 async function testConnectivity() {
-  const label = TXT[LANG].connectivity_test;
   let success = 0;
   let totalTime = 0;
-  let details = [];
 
   for (const src of CONNECTIVITY_SOURCES) {
     if (!running) break;
-    const t = await timed(async () => {
-      const res = await fetch(src.url, { cache: "no-store", mode: "cors" });
+    const t = await timed(async (signal) => {
+      const res = await fetch(src.url, { signal, cache: "no-store", mode: "cors" });
       if (!res.ok) throw new Error("HTTP " + res.status);
-      const content = await (res.headers.get("content-type")?.includes("json") ? res.json() : res.text());
+      const contentType = res.headers.get("content-type");
+      const content = contentType?.includes("json") ? await res.json() : await res.text();
       if (src.check && !src.check(content)) throw new Error("Invalid content");
       return true;
     });
 
     const rowStatus = t.ok ? "ok" : "fail";
-    const rowResult = t.ok ? `موفق (${t.ms} ms)` : `ناموفق (${t.ms} ms - ${t.err || 'خطا'})`;
-    row(`↳ ${src.name}`, rowStatus, rowResult, `${t.ms} ms`, "—", src.url);
+    const rowResult = t.ok ? `OK (${t.ms} ms)` : `Failed (${t.ms} ms - ${t.err || 'error'})`;
+    row(`↳ ${TXT[LANG][src.nameKey]}`, rowStatus, rowResult, `${t.ms} ms`, "—", src.url);
 
     if (t.ok) {
       success++;
       totalTime += t.ms;
     }
-    details.push(`${src.name}: ${t.ok ? "OK" : "Fail"}`);
   }
 
   const finalStatus = success >= CONNECTIVITY_SOURCES.length ? "ok" : success >= CONNECTIVITY_SOURCES.length / 2 ? "warn" : "fail";
   const avg = success > 0 ? Math.round(totalTime / success) : "—";
 
-  row(label, finalStatus, 
+  row(TXT[LANG].connectivity_test, finalStatus, 
     finalStatus === "ok" ? TXT[LANG].connectivity_good :
     finalStatus === "warn" ? TXT[LANG].connectivity_medium :
     TXT[LANG].connectivity_bad,
-    "—", "—", `موفق: ${success}/${CONNECTIVITY_SOURCES.length} • میانگین: ${avg} ms`);
+    "—", "—", `Success: ${success}/${CONNECTIVITY_SOURCES.length} • Avg: ${avg} ms`);
 
   if (success >= CONNECTIVITY_SOURCES.length / 2) successCount++;
 }
 
 async function testDNSHijack() {
-  const label = "تست DNS Hijack";
-  const url = "https://dns.google/resolve?name=telegram.org&type=A";
-
-  const t = await timed(async () => {
-    const res = await fetch(url, { cache: "no-store", mode: "cors" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.json();
-  });
-
-  let hijacked = false;
+  const urls = [
+    "https://dns.google/resolve?name=telegram.org&type=A",
+    "https://cloudflare-dns.com/dns-query?name=telegram.org&type=A"
+  ];
+  
+  let success = false;
   let resultText = TXT[LANG].dns_hijack_no;
   let statusClass = "ok";
+  let timeMs = 0;
+  let lastError = '';
 
-  if (t.ok && t.val.Answer) {
-    for (const ans of t.val.Answer) {
-      const ip = ans.data;
-      if (ip && (ip.startsWith("10.") || ip.startsWith("192.168.") || ip.startsWith("172.") || ip.startsWith("37.228."))) {
-        hijacked = true;
-        resultText = TXT[LANG].dns_hijack_yes + ` (${ip})`;
-        statusClass = "warn";
-        break;
+  for (const url of urls) {
+    const t = await timed(async (signal) => {
+      const res = await fetch(url, { 
+        signal, 
+        cache: "no-store", 
+        mode: "cors",
+        headers: { 'Accept': 'application/dns-json' }
+      }, 5000);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }, 5000);
+
+    timeMs = t.ms;
+    lastError = t.err || '';
+    
+    if (t.ok && t.val.Answer) {
+      success = true;
+      for (const ans of t.val.Answer) {
+        const ip = ans.data;
+        if (ip && (ip.startsWith("10.") || ip.startsWith("192.168.") || ip.startsWith("172.") || ip.startsWith("37.228."))) {
+          resultText = TXT[LANG].dns_hijack_yes + ` (${ip})`;
+          statusClass = "warn";
+          break;
+        }
       }
+      break;
     }
-  } else {
-    resultText = TXT[LANG].dns_error + ` (${t.err || 'خطا'})`;
+  }
+
+  if (!success) {
+    resultText = lastError === 'Timeout' ? TXT[LANG].dns_timeout : TXT[LANG].dns_error;
     statusClass = "fail";
   }
 
-  row(label, statusClass, resultText, `${t.ms} ms`, "—", url);
-
-  if (!hijacked && t.ok) successCount++;
-}
-
-async function testIPv6() {
-  const label = TXT[LANG].ipv6;
-  const url = "https://api64.ipify.org";
-  const t = await timed(async () => {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.text();
-  });
-  if (t.ok && t.val.includes(":")) {
-    row(label, "ok", TXT[LANG].ipv6_yes + ": " + t.val.substring(0, 20) + "...", `${t.ms} ms`, "—", url);
-    successCount++;
-  } else {
-    row(label, "fail", TXT[LANG].ipv6_no + ` (${t.err || ''})`, `${t.ms} ms`, "—", url);
-  }
+  row(TXT[LANG].dns_hijack_test, statusClass, resultText, `${timeMs} ms`, "—", "Multiple DNS Servers", statusClass);
+  if (success && statusClass === "ok") successCount++;
 }
 
 async function testQuality() {
-  const label = "تست کیفیت (پینگ)";
   let totalLatency = 0, count = 0, latencies = [];
 
   for (const src of QUALITY_SOURCES) {
     if (!running) break;
-    const t = await timed(async () => {
-      const res = await fetch(src.url, { cache: "no-store", mode: "no-cors" });
-      return true; // فقط زمان مهم است، status همیشه 0 است
-    });
+    const t = await timed(async (signal) => {
+      const res = await fetch(src.url, { signal, cache: "no-store", mode: "no-cors" });
+      return true;
+    }, 3000);
 
-    const rowStatus = t.ms < 1000 ? "ok" : "warn"; // بر اساس زمان
-    const rowResult = `پینگ (${t.ms} ms)`;
-    row(`↳ ${src.name}`, rowStatus, rowResult, `${t.ms} ms`, "—", src.url);
+    const rowStatus = t.ok && t.ms < 1000 ? "ok" : t.ok ? "warn" : "fail";
+    const rowResult = t.ok ? `Ping (${t.ms} ms)` : `Failed (${t.ms} ms - ${t.err || 'error'})`;
+    row(`↳ ${TXT[LANG][src.nameKey]}`, rowStatus, rowResult, `${t.ms} ms`, "—", src.url);
 
-    totalLatency += t.ms;
-    latencies.push(t.ms);
-    count++;
+    if (t.ok) {
+      totalLatency += t.ms;
+      latencies.push(t.ms);
+      count++;
+    }
   }
 
   if (count > 0) {
@@ -598,51 +680,81 @@ async function testQuality() {
     let status = "ok", result = TXT[LANG].quality_good;
     if (avg > 200) { status = "warn"; result = TXT[LANG].quality_poor; }
     else if (avg > 100) { status = "warn"; result = TXT[LANG].quality_average; }
-    row(label, status, result + `: ${TXT[LANG].ping} ${avg}ms, ${TXT[LANG].jitter} ${jitter}ms`, "—", "—", "Multiple Servers");
+    row(TXT[LANG].quality_test, status, `${result}: ${TXT[LANG].ping} ${avg}ms, ${TXT[LANG].jitter} ${jitter}ms`, "—", "—", "Multiple Servers");
     if (status !== "fail") successCount++;
   } else {
-    row(label, "fail", TXT[LANG].quality_failed, "—", "—", "Multiple Servers");
+    row(TXT[LANG].quality_test, "fail", TXT[LANG].quality_failed, "—", "—", "Multiple Servers");
   }
 }
 
 async function testQUIC() {
-  const label = "تست QUIC";
   const url = "https://quic.nginx.org/";
-
-  const t = await timed(async () => {
-    const res = await fetch(url, { cache: "no-store" });
+  
+  const t = await timed(async (signal) => {
+    const res = await fetch(url, { signal, cache: "no-store", mode: "cors" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const entry = performance.getEntriesByName(url)[0];
-    if (!entry) throw new Error("No performance entry");
-    const protocol = entry.nextHopProtocol || '';
-    if (protocol === 'h3' || protocol.includes('quic')) {
-      return protocol;
-    }
-    throw new Error("Not using QUIC: " + protocol);
-  });
+    return true;
+  }, 3000);
 
-  const status = t.ok ? "ok" : "fail";
-  row(label, status, t.ok ? TXT[LANG].quic_supported + ` (${t.val})` : TXT[LANG].quic_unsupported + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", url);
-  if (t.ok) successCount++;
+  let status = "info";
+  let result = TXT[LANG].quic_cors_blocked;
+  
+  if (t.ok) {
+    status = "ok";
+    result = TXT[LANG].quic_supported;
+  } else if (t.err === 'Timeout' || t.err?.includes('Failed to fetch')) {
+    status = "info";
+    result = TXT[LANG].quic_cors_blocked;
+  } else {
+    status = "fail";
+    result = TXT[LANG].quic_unsupported;
+  }
+  
+  row(TXT[LANG].quic_test, status, result + (t.err ? ` (${t.err})` : ''), `${t.ms} ms`, "—", url, status);
+  if (status === "ok") successCount++;
 }
 
 async function testDoH() {
-  const label = "تست DoH";
-  const url = "https://dns.google/resolve?name=example.com&type=A";
-  const t = await timed(async () => {
-    const res = await fetch(url, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    if (!data.Answer) throw new Error("Invalid DoH response");
-    return true;
-  });
-  const status = t.ok ? "ok" : "fail";
-  row(label, status, t.ok ? TXT[LANG].doh_supported : TXT[LANG].doh_unsupported + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", url);
-  if (t.ok) successCount++;
+  const urls = [
+    "https://dns.google/resolve?name=example.com&type=A",
+    "https://cloudflare-dns.com/dns-query?name=example.com&type=A"
+  ];
+  
+  let success = false;
+  let timeMs = 0;
+  let errorMsg = '';
+
+  for (const url of urls) {
+    const t = await timed(async (signal) => {
+      const res = await fetch(url, { 
+        signal, 
+        cache: "no-store",
+        headers: { 'Accept': 'application/dns-json' }
+      }, 5000);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!data.Answer) throw new Error("Invalid DoH response");
+      return true;
+    }, 5000);
+
+    timeMs = t.ms;
+    if (t.ok) {
+      success = true;
+      break;
+    } else {
+      errorMsg = t.err || '';
+    }
+  }
+
+  let status = success ? "ok" : (errorMsg === 'Timeout' ? "info" : "fail");
+  let result = success ? TXT[LANG].doh_supported : 
+               (errorMsg === 'Timeout' ? TXT[LANG].doh_timeout : TXT[LANG].doh_unsupported);
+  
+  row(TXT[LANG].doh_test, status, result + (errorMsg ? ` (${errorMsg})` : ''), `${timeMs} ms`, "—", "Multiple DoH Servers", status);
+  if (success) successCount++;
 }
 
 async function testWebRTC() {
-  const label = "تست WebRTC";
   const t = await timed(async () => {
     const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
     pc.createDataChannel('test');
@@ -654,49 +766,97 @@ async function testWebRTC() {
       pc.createOffer().then(o => pc.setLocalDescription(o));
     });
   });
+  
   const status = t.ok ? "ok" : "fail";
-  row(label, status, t.ok ? TXT[LANG].webrtc_supported : TXT[LANG].webrtc_unsupported + ` (${t.err || 'خطا'})`, `${t.ms} ms`, "—", "STUN Server");
+  row(TXT[LANG].webrtc_test, status, t.ok ? TXT[LANG].webrtc_supported : TXT[LANG].webrtc_unsupported + (t.err ? ` (${t.err})` : ''), `${t.ms} ms`, "—", "STUN Server", status);
   if (t.ok) successCount++;
+}
+
+async function realDownload(src) {
+  if (!src.isReal) totalRealTests++; // For informational, we don't count in totalRealTests
+  
+  const t = await timed(async (signal) => {
+    const c = abortController || new AbortController();
+    let read = 0;
+    const res = await fetch(src.url, { signal: c.signal, cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.body) throw new Error("No stream");
+    const reader = res.body.getReader();
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      read += value ? value.length : 0;
+      if (read >= src.maxBytes) { c.abort(); break; }
+    }
+    return read;
+  }, 15000);
+
+  if (t.ok) {
+    if (src.isReal) successCount++;
+    const kb = (t.val / 1024).toFixed(1);
+    row(TXT[LANG][src.labelKey], "ok", TXT[LANG].download_success, `${t.ms} ms`, `${kb} KB`, src.url);
+  } else {
+    const status = src.isReal ? "fail" : "info";
+    const message = src.isReal ? TXT[LANG].download_fail : TXT[LANG].download_unavailable;
+    row(TXT[LANG][src.labelKey], status, message + (t.err ? ` (${t.err})` : ''), `${t.ms} ms`, "—", src.url, status);
+    
+    if (src.isReal) {
+      addManualLink(TXT[LANG][src.labelKey], src.url);
+    }
+  }
 }
 
 function showSummary() {
   summary.style.display = "block";
   let text = "";
 
-  if (successCount >= 10) {
+  if (successCount >= 8) {
     text += `<p>${TXT[LANG].summary_good}</p>`;
-  } else if (successCount >= 5) {
+  } else if (successCount >= 4) {
     text += `<p>${TXT[LANG].summary_medium}</p>`;
   } else {
     text += `<p>${TXT[LANG].summary_bad}</p>`;
   }
 
-  text += `<p>${TXT[LANG].summary_ip.replace(/\[IP\]/g, ipDetected || "نامشخص")}</p>`;
-  text += `<p>${TXT[LANG].summary_success_count.replace("[COUNT]", successCount).replace("[TOTAL]", totalTests)}</p>`;
+  text += `<p>${TXT[LANG].summary_ip.replace(/\[IP\]/g, ipDetected || "Unknown")}</p>`;
+  
+  if (ipv6Real) {
+    text += `<p class="ok">✅ ${TXT[LANG].summary_ipv6_success}</p>`;
+  } else {
+    text += `<p class="warn">⚠️ ${TXT[LANG].summary_ipv6_note}</p>`;
+  }
+  
+  text += `<p>${TXT[LANG].summary_success_count.replace("[COUNT]", successCount).replace("[TOTAL]", totalRealTests)}</p>`;
 
-  if (successCount < totalTests) {
-    text += `<p>${TXT[LANG].cors_note}</p>`;
+  if (successCount < totalRealTests) {
+    text += `<p class="warn">⚠️ ${TXT[LANG].summary_cors_note}</p>`;
+  }
+
+  if (secondsElapsed > 30) {
+    text += `<p class="warn">⚠️ ${TXT[LANG].summary_timeout_note}</p>`;
   }
 
   text += `<p>${TXT[LANG].summary_manual}</p>`;
-
+  
   summaryContent.innerHTML = text;
 }
 
 async function run() {
+  if (running) return;
+  
   successCount = 0;
-  out.innerHTML = "";
-  manual.innerHTML = `<h3>${TXT[LANG].manual_title}</h3>`;
-  manual.style.display = "none";
-  summary.style.display = "none";
+  totalRealTests = 0;
+  ipv6Real = false;
+  resetUI();
+  
   running = true;
   abortController = new AbortController();
-  startBtn.textContent = TXT[LANG].stop;
-  startBtn.classList.add("stop");
+  startBtn.disabled = true;
   langSelect.disabled = true;
+  startTimer();
 
-  await ipTest(TXT[LANG].ipv4, "https://api.ipify.org", false);
-  await testIPv6();
+  await ipTest("ipv4", "https://api.ipify.org", false);
+  await ipTest("ipv6", "https://api64.ipify.org", true);
   await testDNSHijack();
   await testQuality();
   await testConnectivity();
@@ -706,26 +866,24 @@ async function run() {
 
   for (const src of DOWNLOAD_SOURCES) {
     if (!running) break;
-    await realDownload(src.label, src.url, src.maxBytes);
+    await realDownload(src);
   }
+
+  // Add manual links for known problematic sites
+  addManualLink(TXT[LANG].ovh_test, "https://ovh.net/files/1Mio.dat");
+  addManualLink(TXT[LANG].github_passwall, "https://github.com/Openwrt-Passwall/openwrt-passwall2/releases/download/26.2.14-1/luci-app-passwall2_26.2.14-r1_all.ipk");
+  addManualLink(TXT[LANG].sourceforge_passwall, "https://sourceforge.net/projects/openwrt-passwall-build/files/releases/packages-24.10/mipsel_74kc/passwall2/Packages/download");
 
   showSummary();
 
   running = false;
   abortController = null;
+  startBtn.disabled = false;
   langSelect.disabled = false;
-  startBtn.textContent = TXT[LANG].start;
-  startBtn.classList.remove("stop");
+  stopTimer();
 }
 
-startBtn.onclick = () => {
-  if (running) {
-    running = false;
-    if (abortController) abortController.abort();
-  } else {
-    run();
-  }
-};
+startBtn.onclick = run;
 </script>
 </body>
 </html>
