@@ -6,7 +6,6 @@
   <title data-lang-key="title">ابزار بررسی کیفیت اینترنت – نسخه وب</title>
   <link rel="icon" href="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/refs/heads/main/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@33.003/Vazirmatn-font-face.css">
-
   <style>
     :root {
       --bg: #0a0a0f;
@@ -50,8 +49,16 @@
       font-size: 1.05rem;
     }
     button:hover { background: #818cf8; }
-    button.stop { background: var(--danger); }
-    button.stop:hover { background: #f87171; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .timer {
+      display: inline-block;
+      margin-right: 1rem;
+      padding: 0.5rem 1rem;
+      background: #1e2338;
+      border-radius: 20px;
+      font-family: monospace;
+      font-size: 1.1rem;
+    }
     select {
       padding: 0.65rem;
       border-radius: 8px;
@@ -81,6 +88,7 @@
     .ok { color: var(--success); font-weight: bold; }
     .fail { color: var(--danger); }
     .warn { color: var(--warning); }
+    .info { color: var(--muted); font-style: italic; }
     .code { font-family: monospace; direction: ltr; word-break: break-all; font-size: 0.85rem; background: #0d1117; padding: 0.3rem 0.6rem; border-radius: 6px; }
     .manual-links {
       margin: 1rem 0;
@@ -113,6 +121,17 @@
       margin-top: 0;
       color: var(--success);
     }
+    .badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      margin-left: 0.5rem;
+    }
+    .badge.ipv6 { background: #1e3a8a; color: #93c5fd; }
+    .badge.ipv4 { background: #854d0e; color: #fde047; }
+    .badge.cors { background: #7f1d1d; color: #fca5a5; }
+    .badge.info { background: #1e1b4b; color: #c7d2fe; }
     footer {
       font-size: 0.9rem;
       opacity: 0.8;
@@ -137,27 +156,27 @@
   </style>
 </head>
 <body>
-
 <header>
   <h1 data-lang-key="title">ابزار بررسی کیفیت اینترنت – نسخه وب</h1>
 </header>
-
 <main>
   <div class="card">
     <p data-lang-key="desc">
       در این ابزار <b>دانلود واقعی فایل</b> انجام می‌شود.<br>
       بعد از اتمام تست، نتیجه نهایی کیفیت اینترنت شما نمایش داده می‌شود.
     </p>
-    <div>
-      <label data-lang-key="lang_label">زبان / Language:</label>
-      <select id="lang">
-        <option value="fa" selected>فارسی</option>
-        <option value="en">English</option>
-      </select>
+    <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+      <div>
+        <label data-lang-key="lang_label">زبان / Language:</label>
+        <select id="lang">
+          <option value="fa" selected>فارسی</option>
+          <option value="en">English</option>
+        </select>
+      </div>
       <button id="start" data-lang-key="start">شروع تست</button>
+      <span id="timer" class="timer" style="display: none;">⏱️ 0:00</span>
     </div>
   </div>
-
   <div class="card">
     <table>
       <thead>
@@ -173,15 +192,12 @@
       <tbody id="out"></tbody>
     </table>
   </div>
-
   <div class="manual-links" id="manual"></div>
-
   <div class="summary" id="summary">
     <h3 data-lang-key="summary_title">نتیجه نهایی کیفیت اینترنت شما</h3>
     <div id="summaryContent"></div>
   </div>
 </main>
-
 <footer>
   <p data-lang-key="footer_cors">
     دانلودهایی که به دلیل CORS بلاک می‌شوند، به‌عنوان «مسدود توسط مرورگر» گزارش می‌شوند.
@@ -191,10 +207,9 @@
   </p>
   <a href="https://github.com/saeed9400/" target="_blank" class="github-link">
     <span data-lang-key="github">پروژه در GitHub</span>
-    <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+    <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.82 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
   </a>
 </footer>
-
 <script>
 // ترجمه‌ها
 const TXT = {
@@ -203,7 +218,6 @@ const TXT = {
     desc: "در این ابزار <b>دانلود واقعی فایل</b> انجام می‌شود.<br>بعد از اتمام تست، نتیجه نهایی کیفیت اینترنت شما نمایش داده می‌شود.",
     lang_label: "زبان / Language:",
     start: "شروع تست",
-    stop: "توقف تست",
     th_test: "تست",
     th_status: "وضعیت",
     th_result: "نتیجه",
@@ -213,24 +227,31 @@ const TXT = {
     ok: "موفق",
     fail: "ناموفق",
     warn: "هشدار",
+    info: "اطلاعات تست",
     download_success: "دانلود واقعی انجام شد",
     download_fail: "مسدود توسط مرورگر (CORS) – لطفاً روی لینک دستی کلیک کنید",
+    download_unavailable: "تست مستقیم امکان‌پذیر نیست - لینک دستی",
+    server_available: "سرور در دسترس (HEAD)",
     no_ip: "عدم دریافت IP",
     ip_shown: "IP مشاهده‌شده: ",
     ipv4: "مسیر IPv4",
     ipv6: "مسیر IPv6",
+    ipv6_real: "IPv6 واقعی",
+    ipv4_fallback: "IPv4 Fallback",
     footer_cors: "دانلودهایی که به دلیل CORS بلاک می‌شوند، به‌عنوان «مسدود توسط مرورگر» گزارش می‌شوند.",
     footer_success: "اگر دانلود واقعی انجام شد → مسیر دانلود شما باز است.",
-    manual_title: "لینک‌های دانلود دستی (در صورت بلاک fetch)",
+    manual_title: "لینک‌های دانلود دستی (برای تست‌هایی که مستقیم امکان‌پذیر نیست)",
     manual_note: "روی لینک کلیک کنید و دانلود را دستی انجام دهید تا وضعیت سرور مشخص شود.",
     summary_title: "نتیجه نهایی کیفیت اینترنت شما",
-    summary_good: "کیفیت اینترنت شما <strong>خوب</strong> است.<br>مسیرهای اصلی تست‌شده باز هستند و دانلودها با سرعت قابل قبول انجام شدند.",
-    summary_medium: "کیفیت اینترنت شما <strong>متوسط</strong> است.<br>بعضی مسیرها باز هستند، اما برخی به دلیل محدودیت مرورگر یا سرور بلاک شدند.",
-    summary_bad: "کیفیت اینترنت شما <strong>پایین یا محدود</strong> است.<br>بیشتر مسیرها بلاک شدند – ممکن است نیاز به ابزار دور زدن داشته باشید.",
-    summary_ip: "IP شما: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a> – این لینک را باز کنید تا مکان و نوع اتصال مشخص شود.",
-    summary_success_count: "دانلودهای موفق: [COUNT] از [TOTAL]",
-    summary_manual: "برای اطمینان، حتماً لینک‌های دستی را هم تست کنید. اگر دانلود دستی هم شروع نشد، مسیر واقعاً محدود است.",
-    cors_note: "برخی تست‌ها به دلیل محدودیت مرورگر (CORS) ناموفق بودند. حتماً لینک‌های دستی را چک کنید.",
+    summary_good: "کیفیت اینترنت شما <strong>خوب</strong> است.<br>مسیرهای اصلی تست‌شده باز هستند.",
+    summary_medium: "کیفیت اینترنت شما <strong>متوسط</strong> است.<br>بعضی مسیرها باز هستند، اما محدودیت‌هایی وجود دارد.",
+    summary_bad: "کیفیت اینترنت شما <strong>پایین یا محدود</strong> است.<br>بیشتر مسیرها بلاک شدند.",
+    summary_ip: "IP شما: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a>",
+    summary_success_count: "دانلودهای موفق: [COUNT] از [TOTAL] (تست‌های واقعی)",
+    summary_ipv6_note: " IPv6 واقعی شناسایی نشد - اتصال شما از طریق IPv4 است",
+    summary_ipv6_success: " IPv6 واقعی فعال است",
+    summary_cors_note: " برخی تست‌ها به دلیل محدودیت CORS ناموفق بودند - لینک‌های دستی را چک کنید",
+    summary_manual: "برای اطمینان، لینک‌های دستی را تست کنید.",
     github: "پروژه در GitHub"
   },
   en: {
@@ -238,7 +259,6 @@ const TXT = {
     desc: "This tool performs <b>real file download</b>.<br>After the test, a final summary of your internet quality will be shown.",
     lang_label: "Language:",
     start: "Start Test",
-    stop: "Stop Test",
     th_test: "Test",
     th_status: "Status",
     th_result: "Result",
@@ -248,24 +268,31 @@ const TXT = {
     ok: "OK",
     fail: "Fail",
     warn: "Warning",
+    info: "Info",
     download_success: "Real download completed",
-    download_fail: "Blocked by browser (CORS) – please click manual link",
+    download_fail: "Blocked by browser (CORS) – click manual link",
+    download_unavailable: "Direct test unavailable - manual link",
+    server_available: "Server reachable (HEAD)",
     no_ip: "Failed to get IP",
     ip_shown: "Visible IP: ",
     ipv4: "IPv4 Route",
     ipv6: "IPv6 Route",
+    ipv6_real: "Native IPv6",
+    ipv4_fallback: "IPv4 Fallback",
     footer_cors: "Downloads blocked by CORS are reported as «Blocked by browser».",
     footer_success: "If real download succeeded → your download path is open.",
-    manual_title: "Manual Download Links (if fetch blocked)",
+    manual_title: "Manual Download Links (for tests that cannot be done directly)",
     manual_note: "Click the link and download manually to check server accessibility.",
     summary_title: "Final Internet Quality Summary",
-    summary_good: "Your internet quality is <strong>good</strong>.<br>Main tested paths are open and download speeds are acceptable.",
-    summary_medium: "Your internet quality is <strong>medium</strong>.<br>Some paths work, but others are blocked by browser/server restrictions.",
-    summary_bad: "Your internet quality is <strong>low or restricted</strong>.<br>Most paths are blocked – you may need better circumvention tools.",
-    summary_ip: "Your IP: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a> – Open this link to check location and connection type.",
-    summary_success_count: "Successful downloads: [COUNT] of [TOTAL]",
-    summary_manual: "For certainty, test the manual links. If manual download also fails, the path is truly restricted.",
-    cors_note: "Some tests failed due to browser restrictions (CORS). Please check the manual links.",
+    summary_good: "Your internet quality is <strong>good</strong>.<br>Main tested paths are open.",
+    summary_medium: "Your internet quality is <strong>medium</strong>.<br>Some paths work, but there are restrictions.",
+    summary_bad: "Your internet quality is <strong>low or restricted</strong>.<br>Most paths are blocked.",
+    summary_ip: "Your IP: <a href='https://whatismyipaddress.com/ip/[IP]' target='_blank' class='external-link'>[IP]</a>",
+    summary_success_count: "Successful downloads: [COUNT] of [TOTAL] (real tests)",
+    summary_ipv6_note: " No native IPv6 detected - your connection uses IPv4",
+    summary_ipv6_success: " Native IPv6 is active",
+    summary_cors_note: " Some tests failed due to CORS - check manual links",
+    summary_manual: "For certainty, test the manual links.",
     github: "Project on GitHub"
   }
 };
@@ -273,11 +300,15 @@ const TXT = {
 let LANG = "fa";
 let running = false;
 let successCount = 0;
-let totalTests = 6;
+let totalRealTests = 0;
 let ipDetected = "";
+let ipv6Real = false;
+let timerInterval = null;
+let secondsElapsed = 0;
 
 const langSelect = document.getElementById("lang");
 const startBtn = document.getElementById("start");
+const timerEl = document.getElementById("timer");
 const out = document.getElementById("out");
 const manual = document.getElementById("manual");
 const summary = document.getElementById("summary");
@@ -288,27 +319,54 @@ function updateLanguage() {
   document.documentElement.dir = LANG === "fa" ? "rtl" : "ltr";
   document.querySelectorAll("[data-lang-key]").forEach(el => {
     const k = el.getAttribute("data-lang-key");
-    if (TXT[LANG][k]) el.innerHTML = TXT[LANG][k];
+    if (TXT[LANG][k]) {
+      el.innerHTML = TXT[LANG][k];
+    }
   });
-  startBtn.textContent = running ? TXT[LANG].stop : TXT[LANG].start;
+  if (!running) startBtn.textContent = TXT[LANG].start;
 }
 
 langSelect.onchange = e => {
   LANG = e.target.value;
   updateLanguage();
-
-  out.innerHTML = "";
-  manual.innerHTML = `<h3>${TXT[LANG].manual_title}</h3>`;
-  manual.style.display = "none";
-  summary.style.display = "none";
-  summaryContent.innerHTML = "";
+  resetUI();
 };
 
 updateLanguage();
 
-function row(test, status, result, time, size, source) {
+function resetUI() {
+  out.innerHTML = "";
+  manual.innerHTML = `<h3>${TXT[LANG].manual_title}</h3><p>${TXT[LANG].manual_note}</p>`;
+  manual.style.display = "none";
+  summary.style.display = "none";
+  summaryContent.innerHTML = "";
+}
+
+function startTimer() {
+  secondsElapsed = 0;
+  timerEl.style.display = "inline-block";
+  timerEl.textContent = `⏱️ 0:00`;
+  timerInterval = setInterval(() => {
+    secondsElapsed++;
+    const mins = Math.floor(secondsElapsed / 60);
+    const secs = secondsElapsed % 60;
+    timerEl.textContent = `⏱️ ${mins}:${secs.toString().padStart(2, '0')}`;
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+  timerEl.style.display = "none";
+}
+
+function row(test, status, result, time, size, source, statusClass = null) {
   const tr = document.createElement("tr");
-  tr.innerHTML = `<td>${test}</td><td class="${status}">${TXT[LANG][status] || status}</td><td>${result}</td><td>${time}</td><td>${size}</td><td class="code">${source}</td>`;
+  const finalStatusClass = statusClass || (status === "ok" ? "ok" : status === "fail" ? "fail" : status === "info" ? "info" : "warn");
+  const statusText = TXT[LANG][status] || status;
+  tr.innerHTML = `<td>${test}</td><td class="${finalStatusClass}">${statusText}</td><td>${result}</td><td>${time}</td><td>${size}</td><td class="code">${source}</td>`;
   out.appendChild(tr);
 }
 
@@ -322,11 +380,64 @@ async function timed(fn) {
   }
 }
 
-async function realDownload(label, url, maxBytes = 512*1024) {
+// Special test for GitHub releases (always CORS-blocked)
+async function githubReleaseTest(label, url) {
+  const t = await timed(async () => {
+    const res = await fetch(url, { method: 'HEAD', cache: "no-store" }).catch(() => null);
+    if (!res) throw new Error("CORS blocked");
+    return res.status;
+  });
+
+  if (t.ok) {
+    row(label, "info", TXT[LANG].server_available, `${t.ms} ms`, "—", url, "info");
+  } else {
+    row(label, "info", TXT[LANG].download_unavailable, `${t.ms} ms`, "—", url, "info");
+    
+    const linkContainer = document.createElement("div");
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = label;
+    linkContainer.appendChild(link);
+    manual.appendChild(linkContainer);
+    manual.style.display = "block";
+  }
+}
+
+// Special test for SourceForge (redirect to HTML)
+async function sourceforgeTest(label, url) {
+  const t = await timed(async () => {
+    const res = await fetch(url, { method: 'HEAD', cache: "no-store", redirect: 'manual' }).catch(() => null);
+    if (!res) throw new Error("CORS blocked");
+    return res.status;
+  });
+
+  if (t.ok) {
+    row(label, "info", TXT[LANG].server_available, `${t.ms} ms`, "—", url, "info");
+  } else {
+    row(label, "info", TXT[LANG].download_unavailable, `${t.ms} ms`, "—", url, "info");
+    
+    const linkContainer = document.createElement("div");
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = label;
+    linkContainer.appendChild(link);
+    manual.appendChild(linkContainer);
+    manual.style.display = "block";
+  }
+}
+
+async function realDownload(label, url, maxBytes = 512 * 1024, isInformational = false) {
+  if (!isInformational) totalRealTests++;
+  
   const t = await timed(async () => {
     const c = new AbortController();
     let read = 0;
     const res = await fetch(url, { signal: c.signal, cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     if (!res.body) throw new Error("no stream");
     const reader = res.body.getReader();
     while (true) {
@@ -339,20 +450,22 @@ async function realDownload(label, url, maxBytes = 512*1024) {
   });
 
   if (t.ok) {
-    successCount++;
+    if (!isInformational) successCount++;
     const kb = (t.val / 1024).toFixed(1);
     row(label, "ok", TXT[LANG].download_success, `${t.ms} ms`, `${kb} KB`, url);
   } else {
-    row(label, "fail", TXT[LANG].download_fail, `${t.ms} ms`, "—", url);
-    const div = document.createElement("div");
-    div.innerHTML = `<p>${TXT[LANG].manual_note}</p>`;
-    const a = document.createElement("a");
-    a.href = url;
-    a.target = "_blank";
-    a.rel = "noopener noreferrer";
-    a.textContent = label;
-    div.appendChild(a);
-    manual.appendChild(div);
+    const status = isInformational ? "info" : "fail";
+    const message = isInformational ? TXT[LANG].download_unavailable : TXT[LANG].download_fail;
+    row(label, status, message, `${t.ms} ms`, "—", url, status);
+    
+    const linkContainer = document.createElement("div");
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = label;
+    linkContainer.appendChild(link);
+    manual.appendChild(linkContainer);
     manual.style.display = "block";
   }
 }
@@ -366,9 +479,17 @@ async function ipTest(label, url, expectV6) {
   if (t.ok) {
     const ip = t.val;
     const isV6 = ip.includes(":");
-    const st = (isV6 === expectV6) ? "ok" : "warn";
-    row(label, st, TXT[LANG].ip_shown + ip, `${t.ms} ms`, "—", url);
-    if (label.includes("IPv4")) ipDetected = ip;
+    
+    if (expectV6) {
+      ipv6Real = isV6;
+      const status = isV6 ? "ok" : "info";
+      const result = isV6 ? TXT[LANG].ipv6_real : TXT[LANG].ipv4_fallback;
+      const statusClass = isV6 ? "ok" : "info";
+      row(label, status, result, `${t.ms} ms`, "—", url, statusClass);
+    } else {
+      ipDetected = ip;
+      row(label, "ok", TXT[LANG].ip_shown + ip, `${t.ms} ms`, "—", url);
+    }
   } else {
     row(label, "fail", TXT[LANG].no_ip, `${t.ms} ms`, "—", url);
   }
@@ -377,60 +498,68 @@ async function ipTest(label, url, expectV6) {
 function showSummary() {
   summary.style.display = "block";
   let text = "";
-
-  if (successCount >= 4) {
+  
+  if (successCount >= 3) {
     text += `<p>${TXT[LANG].summary_good}</p>`;
-  } else if (successCount >= 2) {
+  } else if (successCount >= 1) {
     text += `<p>${TXT[LANG].summary_medium}</p>`;
   } else {
     text += `<p>${TXT[LANG].summary_bad}</p>`;
   }
-
+  
   text += `<p>${TXT[LANG].summary_ip.replace(/\[IP\]/g, ipDetected)}</p>`;
-  text += `<p>${TXT[LANG].summary_success_count.replace("[COUNT]", successCount).replace("[TOTAL]", totalTests)}</p>`;
-
-  if (successCount < totalTests) {
-    text += `<p>${TXT[LANG].cors_note}</p>`;
+  
+  if (ipv6Real) {
+    text += `<p class="ok">✅ ${TXT[LANG].summary_ipv6_success}</p>`;
+  } else {
+    text += `<p class="warn">⚠️ ${TXT[LANG].summary_ipv6_note}</p>`;
   }
-
+  
+  text += `<p>${TXT[LANG].summary_success_count.replace("[COUNT]", successCount).replace("[TOTAL]", totalRealTests)}</p>`;
+  
+  if (successCount < totalRealTests) {
+    text += `<p class="warn">⚠️ ${TXT[LANG].summary_cors_note}</p>`;
+  }
+  
   text += `<p>${TXT[LANG].summary_manual}</p>`;
-
+  
   summaryContent.innerHTML = text;
 }
 
 async function run() {
+  if (running) return;
+  
   successCount = 0;
-  out.innerHTML = "";
-  manual.innerHTML = `<h3>${TXT[LANG].manual_title}</h3>`;
-  manual.style.display = "none";
-  summary.style.display = "none";
+  totalRealTests = 0;
+  ipv6Real = false;
+  resetUI();
+  
   running = true;
-  startBtn.textContent = TXT[LANG].stop;
-  startBtn.classList.add("stop");
+  startBtn.disabled = true;
   langSelect.disabled = true;
+  startTimer();
 
   await ipTest(TXT[LANG].ipv4, "https://api.ipify.org", false);
   await ipTest(TXT[LANG].ipv6, "https://api64.ipify.org", true);
-
-  await realDownload("GitHub Raw", "https://raw.githubusercontent.com/github/gitignore/main/Node.gitignore");
+  
   await realDownload("jsDelivr lodash", "https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js");
-  await realDownload("unpkg react", "https://unpkg.com/react@18/umd/react.production.min.js");
-
-  await realDownload("OpenWRT lastupdate", "https://downloads.openwrt.org/releases/lastupdate", 128*1024);
-  await realDownload("Passwall2 IPK", "https://github.com/Openwrt-Passwall/openwrt-passwall2/releases/download/26.2.14-1/luci-app-passwall2_26.2.14-r1_all.ipk");
-  await realDownload("Passwall Packages SF", "https://sourceforge.net/projects/openwrt-passwall-build/files/releases/packages-24.10/mipsel_74kc/passwall2/Packages/download");
-
+  await realDownload("OpenWRT lastupdate", "https://downloads.openwrt.org/releases/lastupdate", 128 * 1024);
+  
+  await realDownload("unpkg react (info)", "https://unpkg.com/react@18/umd/react.production.min.js", 512 * 1024, true);
+  
+  await githubReleaseTest("Passwall2 IPK (GitHub)", "https://github.com/Openwrt-Passwall/openwrt-passwall2/releases/download/26.2.14-1/luci-app-passwall2_26.2.14-r1_all.ipk");
+  
+  await sourceforgeTest("Passwall Packages (SF)", "https://sourceforge.net/projects/openwrt-passwall-build/files/releases/packages-24.10/mipsel_74kc/passwall2/Packages/download");
+  
   showSummary();
-
+  
   running = false;
+  startBtn.disabled = false;
   langSelect.disabled = false;
-  startBtn.textContent = TXT[LANG].start;
-  startBtn.classList.remove("stop");
+  stopTimer();
 }
 
-startBtn.onclick = () => {
-  if (!running) run();
-};
+startBtn.onclick = run;
 </script>
 </body>
 </html>
