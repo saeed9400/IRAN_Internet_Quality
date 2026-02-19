@@ -3,10 +3,71 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ابزار بررسی کیفیت اینترنت ایران – README</title>
+  <meta name="google-site-verification" content="pqR9dWrVE6R9z2jFYhaciJE1NzOSar5ZJboKnsnvR34" />
   
+  <title>بررسی کیفیت اینترنت ایران – تست واقعی دانلود، DNS Hijacking، QUIC، پینگ خارجی بدون نصب</title>
+  <meta name="description" content="تست رایگان کیفیت اینترنت ایران ۱۴۰۴: دانلود واقعی فایل، تشخیص DNS Hijacking، پشتیبانی QUIC/HTTP3، DoH، WebRTC، پینگ به خارج، IPv6 – ابزار وب بدون نیاز به نصب برای کاربران ایرانی">
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vazir-font@33.003/Vazirmatn-font-face.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Schema.org - WebApplication -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "ابزار بررسی کیفیت اینترنت ایران",
+    "url": "https://saeed9400.github.io/IRAN_Internet_Quality/",
+    "description": "تست واقعی کیفیت و محدودیت اینترنت ایران: دانلود بدون فریب CORS، تشخیص DNS Hijacking، QUIC/HTTP3، DoH، WebRTC، پینگ خارجی – رایگان و بدون نصب",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "IRR"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "saeed9400"
+    },
+    "inLanguage": "fa-IR",
+    "license": "https://github.com/saeed9400/IRAN_Internet_Quality/blob/main/LICENSE"
+  }
+  </script>
+
+  <!-- Schema.org - FAQPage (برای سوالات متداول) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "چرا دانلود از گیتهاب یا Cloudflare بلاک می‌شود؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "اغلب به‌خاطر محدودیت ISP یا فیلترینگ پویا است، نه مشکل CORS. نسخه ۲ با پراکسی این مسئله را دور می‌زند."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "این ابزار سرعت واقعی اینترنت را نشان می‌دهد؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "برخلاف speedtestهای معمولی، اینجا دانلود واقعی فایل و پینگ خارجی تست می‌شود که در شرایط ایران دقیق‌تر و واقعی‌تر است."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "تست پینگ دقیق نیست؟",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "به دلیل محدودیت‌های مرورگر (no-cors)، تقریبی است؛ اما برای مقایسه ISPها و تشخیص محدودیت خیلی کاربردی است."
+        }
+      }
+    ]
+  }
+  </script>
 
   <style>
     :root {
@@ -164,103 +225,84 @@
   <div class="container">
 
     <header>
-	<img src="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/main/data/IRAN_Internet_Quality.png"  alt="IRAN Internet Quality Check" width="50%">
-      <h1 data-fa="ابزار بررسی کیفیت اینترنت" data-en="Iran Internet Quality Tester">
-        ابزار بررسی کیفیت اینترنت
+      <img src="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/main/data/IRAN_Internet_Quality.png" alt="IRAN Internet Quality Check" width="50%">
+      <h1 data-fa="ابزار بررسی کیفیت اینترنت ایران" data-en="Iran Internet Quality Tester">
+        ابزار بررسی کیفیت اینترنت ایران
       </h1>
-      <p data-fa="نسخه محدود وب" data-en="Web Version">
-        نسخه محدود وب
+      <p data-fa="نسخه وب – تست واقعی دانلود، DNS Hijack، QUIC، پینگ خارجی" data-en="Web Version – Real download, DNS Hijack, QUIC, external ping">
+        نسخه وب – تست واقعی دانلود، DNS Hijack، QUIC، پینگ خارجی
       </p>
 
       <div class="lang-toggle" id="langToggle">
         <i class="fa-solid fa-language"></i> EN / FA
       </div>
-
-
     </header>
 
     <div class="markdown-body">
 
-      <h2 data-fa="لینک‌های مستقیم استفاده" data-en="Direct Access Links">لینک‌های مستقیم استفاده</h2>
+      <h2 data-fa="لینک‌های مستقیم شروع تست" data-en="Direct Start Links">لینک‌های مستقیم شروع تست</h2>
 
-      <table>
-        <thead>
-          <tr>
-            <th data-fa="نسخه" data-en="Version">نسخه</th>
-            <th data-fa="توضیحات" data-en="Description">توضیحات</th>
-            <th data-fa="لینک" data-en="Link">لینک</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td data-fa="تست پایه" data-en="Basic Test">تست پایه</td>
-            <td data-fa="تست دانلود واقعی + مسیر IPv4/IPv6" data-en="Real download test + IPv4/IPv6 path">تست دانلود واقعی + مسیر IPv4/IPv6</td>
-            <td><a href="https://saeed9400.github.io/IRAN_Internet_Quality/v1" target="_blank"  data-fa="شروع تست اصلی" data-en="Start Basic Test">شروع تست اصلی</a></td>
-          </tr>
-          <tr>
-            <td data-fa="نسخه ۲ (پیشرفته)" data-en="Version 2 (Advanced)">نسخه ۲ (پیشرفته)</td>
-            <td data-fa="تست جامع + پینگ + QUIC + DoH + WebRTC + DNS Hijack + اتصال عمومی" data-en="Comprehensive test + Ping + QUIC + DoH + WebRTC + DNS Hijack + General connectivity">تست جامع + پینگ + QUIC + DoH + WebRTC + DNS Hijack + اتصال عمومی</td>
-            <td><a href="https://saeed9400.github.io/IRAN_Internet_Quality/v2" target="_blank"  data-fa="شروع تست پیشرفته" data-en="Start Advanced Test">شروع تست پیشرفته</a></td>
-          </tr>
-        </tbody>
-      </table>
+      <p data-fa="تست پیشرفته (توصیه اصلی) – جامع‌ترین تحلیل کیفیت اینترنت ایران" data-en="Advanced Test (recommended) – Most comprehensive analysis">
+        <strong data-fa="تست پیشرفته (توصیه اصلی)" data-en="Advanced Test (recommended)">تست پیشرفته (توصیه اصلی)</strong><br>
+        <a href="https://saeed9400.github.io/IRAN_Internet_Quality/v2" target="_blank" data-fa="شروع تست پیشرفته – شامل پینگ، DoH، QUIC، WebRTC و ..." data-en="Start Advanced Test – Includes ping, DoH, QUIC, WebRTC and ...">
+          شروع تست پیشرفته – شامل پینگ، DoH، QUIC، WebRTC و ...
+        </a>
+      </p>
 
-      <h2 data-fa="هدف پروژه" data-en="Project Goal">هدف پروژه</h2>
+      <p data-fa="تست پایه – سریع برای چک دانلود واقعی" data-en="Basic Test – Quick real download check">
+        <strong data-fa="تست پایه" data-en="Basic Test">تست پایه</strong><br>
+        <a href="https://saeed9400.github.io/IRAN_Internet_Quality/v1" target="_blank" data-fa="شروع تست پایه" data-en="Start Basic Test">
+          شروع تست پایه
+        </a>
+      </p>
 
-      <p data-fa="این ابزار بدون نیاز به نصب و فقط با باز کردن صفحه در مرورگر به شما کمک می‌کند بفهمید:" data-en="This tool helps you understand your internet situation right from the browser — no installation required:">
-        این ابزار بدون نیاز به نصب و فقط با باز کردن صفحه در مرورگر به شما کمک می‌کند بفهمید:
+      <h2 data-fa="هدف این ابزار چیست؟" data-en="Project Goal">هدف این ابزار چیست؟</h2>
+
+      <p data-fa="این صفحه به شما کمک می‌کند بدون نصب هیچ نرم‌افزاری، وضعیت واقعی اینترنت خود در ایران را بررسی کنید:" data-en="This page helps you check your real internet situation in Iran without installing anything:">
+        این صفحه به شما کمک می‌کند بدون نصب هیچ نرم‌افزاری، وضعیت واقعی اینترنت خود در ایران را بررسی کنید:
       </p>
 
       <ul>
-        <li data-fa="آیا مسیر دانلود شما واقعاً باز است یا فقط به‌خاطر CORS بلاک به نظر می‌رسد؟" data-en="Is your download path really open or just blocked by browser CORS?">
-          آیا مسیر دانلود شما واقعاً باز است یا فقط به‌خاطر CORS بلاک به نظر می‌رسد؟
-        </li>
-        <li data-fa="آیا DNS Hijacking در سطح ISP شما رخ می‌دهد؟" data-en="Is DNS Hijacking happening at your ISP level?">
-          آیا DNS Hijacking در سطح ISP شما رخ می‌دهد؟
-        </li>
-        <li data-fa="سرعت تقریبی پینگ به سرورهای بین‌المللی چقدر است؟" data-en="What is the approximate ping to international servers?">
-          سرعت تقریبی پینگ به سرورهای بین‌المللی چقدر است؟
-        </li>
-        <li data-fa="آیا پروتکل‌های مدرن (QUIC / DoH / WebRTC) کار می‌کنند؟" data-en="Do modern protocols (QUIC / DoH / WebRTC) work?">
-          آیا پروتکل‌های مدرن (QUIC / DoH / WebRTC) کار می‌کنند؟
-        </li>
-        <li data-fa="IPv6 شما فعال است یا خیر؟" data-en="Is IPv6 enabled?">
-          IPv6 شما فعال است یا خیر؟
-        </li>
+        <li data-fa="دانلود واقعی فایل (نه فقط speedtest دروغین)" data-en="Real file download (not fake speedtest)">دانلود واقعی فایل (نه فقط speedtest دروغین)</li>
+        <li data-fa="تشخیص DNS Hijacking و دستکاری ISP" data-en="Detect DNS Hijacking and ISP tampering">تشخیص DNS Hijacking و دستکاری ISP</li>
+        <li data-fa="پینگ و جتر تقریبی به سرورهای خارجی" data-en="Approximate ping/jitter to foreign servers">پینگ و جتر تقریبی به سرورهای خارجی</li>
+        <li data-fa="پشتیبانی از QUIC/HTTP3، DoH، WebRTC" data-en="QUIC/HTTP3, DoH, WebRTC support">پشتیبانی از QUIC/HTTP3، DoH، WebRTC</li>
+        <li data-fa="وضعیت IPv6 و اتصال به CDNهای بزرگ" data-en="IPv6 status and big CDN connectivity">وضعیت IPv6 و اتصال به CDNهای بزرگ</li>
       </ul>
 
-      <h2 data-fa="تفاوت نسخه‌ها" data-en="Version Comparison">تفاوت نسخه‌ها</h2>
+      <h2 data-fa="تفاوت نسخه پایه و پیشرفته" data-en="Version Comparison">تفاوت نسخه پایه و پیشرفته</h2>
 
       <table>
         <thead>
           <tr>
             <th data-fa="ویژگی" data-en="Feature">ویژگی</th>
-            <th data-fa="نسخه ۱" data-en="v1">نسخه ۱</th>
-            <th data-fa="نسخه ۲" data-en="v2">نسخه ۲</th>
+            <th data-fa="نسخه ۱ (پایه)" data-en="v1 (Basic)">نسخه ۱ (پایه)</th>
+            <th data-fa="نسخه ۲ (پیشرفته)" data-en="v2 (Advanced)">نسخه ۲ (پیشرفته)</th>
           </tr>
         </thead>
         <tbody>
           <tr><td data-fa="دانلود واقعی فایل" data-en="Real file download">دانلود واقعی فایل</td><td>✓</td><td>✓</td></tr>
           <tr><td data-fa="نمایش IP (v4 + v6)" data-en="Show IP (v4 + v6)">نمایش IP (v4 + v6)</td><td>✓</td><td>✓</td></tr>
-          <tr><td data-fa="تست پینگ / Jitter" data-en="Ping / Jitter test">تست پینگ / Jitter</td><td>—</td><td>✓</td></tr>
-          <tr><td data-fa="تست DNS Hijack" data-en="DNS Hijack detection">تست DNS Hijack</td><td>—</td><td>✓</td></tr>
-          <tr><td data-fa="تست QUIC / HTTP/3" data-en="QUIC / HTTP/3 support">تست QUIC / HTTP/3</td><td>—</td><td>✓</td></tr>
-          <tr><td data-fa="تست DoH" data-en="DoH support test">تست DoH</td><td>—</td><td>✓</td></tr>
+          <tr><td data-fa="تست پینگ / Jitter" data-en="Ping / Jitter">تست پینگ / Jitter</td><td>—</td><td>✓</td></tr>
+          <tr><td data-fa="تشخیص DNS Hijack" data-en="DNS Hijack detection">تشخیص DNS Hijack</td><td>—</td><td>✓</td></tr>
+          <tr><td data-fa="تست QUIC / HTTP/3" data-en="QUIC / HTTP/3">تست QUIC / HTTP/3</td><td>—</td><td>✓</td></tr>
+          <tr><td data-fa="تست DoH" data-en="DoH support">تست DoH</td><td>—</td><td>✓</td></tr>
           <tr><td data-fa="تست WebRTC" data-en="WebRTC test">تست WebRTC</td><td>—</td><td>✓</td></tr>
           <tr><td data-fa="پراکسی در صورت بلاک CORS" data-en="Proxy on CORS block">پراکسی در صورت بلاک CORS</td><td>—</td><td>✓</td></tr>
         </tbody>
       </table>
 
-      <h2 data-fa="توسعه‌دهنده" data-en="Developer">توسعه‌دهنده</h2>
+      <h2 data-fa="توسعه‌دهنده و منبع پروژه" data-en="Developer & Source">توسعه‌دهنده و منبع پروژه</h2>
       <p>
         <strong>saeed9400</strong><br>
-        GitHub: <a href="https://github.com/saeed9400" target="_blank">github.com/saeed9400</a>
+        GitHub: <a href="https://github.com/saeed9400/IRAN_Internet_Quality" target="_blank">github.com/saeed9400/IRAN_Internet_Quality</a><br>
+        README کامل پروژه: <a href="https://github.com/saeed9400/IRAN_Internet_Quality#readme" target="_blank">README.md</a>
       </p>
 
-		<div class="center thanks" data-fa="با عشق و به عشق ایران ❤️❤️" data-en="With love, for the love of Iran ❤️❤️">
-		  با عشق و به عشق ایران ❤️❤️
-		</div>
-		
+      <div class="center thanks" data-fa="با عشق و به عشق ایران ❤️❤️" data-en="With love, for the love of Iran ❤️❤️">
+        با عشق و به عشق ایران ❤️❤️
+      </div>
+
       <div class="badges">
         <img src="https://img.shields.io/github/license/saeed9400/IRAN_Internet_Quality?style=flat-square" alt="License"/>
         <img src="https://img.shields.io/github/stars/saeed9400/IRAN_Internet_Quality?style=flat-square" alt="Stars"/>
@@ -290,21 +332,6 @@
     }
 
     langToggle.addEventListener('click', updateLanguage);
-
-    // Optional: Theme toggle (dark/light) – uncomment if desired
-    /*
-    const themeToggle = document.createElement('div');
-    themeToggle.className = 'lang-toggle';
-    themeToggle.style.left = '1.5rem';
-    themeToggle.style.right = 'auto';
-    themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i> / <i class="fa-solid fa-sun"></i>';
-    document.querySelector('header').appendChild(themeToggle);
-
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = html.getAttribute('data-theme');
-      html.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
-    });
-    */
   </script>
 
 </body>
