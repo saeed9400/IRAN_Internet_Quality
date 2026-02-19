@@ -15,7 +15,7 @@
 
   <br/><br/>
 
-   🔗 **شروع تست کیفیت اینترنت** → [https://saeed9400.github.io/IRAN_Internet_Quality/v1](https://saeed9400.github.io/IRAN_Internet_Quality/)
+   🔗 → [**شروع تست کیفیت اینترنت** ](https://saeed9400.github.io/IRAN_Internet_Quality/)
 
 </div>
 
