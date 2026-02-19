@@ -15,7 +15,8 @@
 
   <br/><br/>
 
-  🔗 **تست پیشرفته (پیشنهاد اصلی – جامع‌ترین)** → [https://saeed9400.github.io/IRAN_Internet_Quality/v2](https://saeed9400.github.io/IRAN_Internet_Quality/v2)  
+  🔗 **تست پیشرفته (پیشنهاد اصلی – جامع‌ترین)** → [https://saeed9400.github.io/IRAN_Internet_Quality/v2](https://saeed9400.github.io/IRAN_Internet_Quality/v2) 
+  
   🔗 **تست پایه (سریع و ساده)** → [https://saeed9400.github.io/IRAN_Internet_Quality/v1](https://saeed9400.github.io/IRAN_Internet_Quality/v1)
 
 </div>
@@ -107,7 +108,7 @@
 
 ### توسعه‌دهنده
 
-**saeed9400**  
+
 GitHub: [github.com/saeed9400](https://github.com/saeed9400)  
 پروژه مرتبط دیگر: [IRAN_Passwall2](https://github.com/saeed9400/IRAN_Passwall2)
 
