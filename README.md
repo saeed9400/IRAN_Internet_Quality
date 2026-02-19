@@ -15,9 +15,7 @@
 
   <br/><br/>
 
-  🔗 **تست پیشرفته (پیشنهاد اصلی – جامع‌ترین)** → [https://saeed9400.github.io/IRAN_Internet_Quality/v2](https://saeed9400.github.io/IRAN_Internet_Quality/v2) 
-  
-  🔗 **تست پایه (سریع و ساده)** → [https://saeed9400.github.io/IRAN_Internet_Quality/v1](https://saeed9400.github.io/IRAN_Internet_Quality/v1)
+   🔗 **شروع تست کیفیت اینترنت** → [https://saeed9400.github.io/IRAN_Internet_Quality/v1](https://saeed9400.github.io/IRAN_Internet_Quality/)
 
 </div>
 
