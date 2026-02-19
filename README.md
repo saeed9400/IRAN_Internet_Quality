@@ -1,5 +1,5 @@
-# ابزار بررسی کیفیت و محدودیت اینترنت ایران  
-**IRAN Internet Quality Tester** – نسخه وب
+# ابزار بررسی کیفیت ، سرعت و محدودیت اینترنت ایران  
+**IRAN Internet Quality Monitor (Tester)** – Web Edition
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/main/data/IRAN_Internet_Quality.png" alt="IRAN Internet Quality Check" width="60%">
