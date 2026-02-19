@@ -4,9 +4,6 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/main/data/IRAN_Internet_Quality.png" alt="IRAN Internet Quality Check" width="60%">
 
-  [![GitHub stars](https://img.shields.io/github/stars/saeed9400/IRAN_Internet_Quality?style=social)](https://github.com/saeed9400/IRAN_Internet_Quality/stargazers)
-  [![GitHub forks](https://img.shields.io/github/forks/saeed9400/IRAN_Internet_Quality?style=social)](https://github.com/saeed9400/IRAN_Internet_Quality/network/members)
-  [![License](https://img.shields.io/github/license/saeed9400/IRAN_Internet_Quality)](https://github.com/saeed9400/IRAN_Internet_Quality/blob/main/LICENSE)
 
   <br/><br/>
 
