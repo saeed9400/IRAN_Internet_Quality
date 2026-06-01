@@ -102,13 +102,13 @@
       transition: background 0.4s, color 0.4s;
     }
     .container {
-      max-width: 980px;
+      max-width: 1100px;
       margin: 0 auto;
       padding: 2.5rem 1.5rem;
     }
     header {
       text-align: center;
-      padding: 3rem 0 2rem;
+      padding: 2rem 0 1.5rem;
       position: relative;
     }
     h1 {
@@ -118,8 +118,8 @@
     }
     .lang-toggle {
       position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
+      top: 1rem;
+      right: 1rem;
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 50px;
@@ -127,6 +127,8 @@
       cursor: pointer;
       user-select: none;
       transition: all 0.25s;
+      font-size: 0.9rem;
+      z-index: 10;
     }
     .lang-toggle:hover {
       background: var(--accent);
@@ -137,12 +139,12 @@
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin: 1.5rem 0 3rem;
+      margin: 1.5rem 0 2rem;
       flex-wrap: wrap;
     }
     .markdown-body {
       background: var(--card);
-      padding: 2.2rem;
+      padding: 2rem;
       border-radius: var(--radius);
       border: 1px solid var(--border);
       box-shadow: 0 10px 30px rgba(0,0,0,0.25);
@@ -151,7 +153,7 @@
       color: var(--accent);
       border-bottom: 1px solid var(--border);
       padding-bottom: 0.4em;
-      margin-top: 2.2em;
+      margin-top: 2em;
     }
     table {
       width: 100%;
@@ -187,18 +189,103 @@
     .thanks {
       font-size: 1.3rem;
       font-weight: 600;
-      margin: 4rem 0 2rem;
+      margin: 3rem 0 1.5rem;
       color: var(--success);
       padding: 1.5rem;
       background: rgba(63, 185, 80, 0.08);
       border-radius: var(--radius);
       border: 1px solid rgba(63, 185, 80, 0.2);
     }
+    /* کارت‌های تست (جایگزین لینک‌های ساده) */
+    .test-cards {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: center;
+      margin: 2rem 0 1rem;
+    }
+    .test-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 1.5rem 1.8rem;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      flex: 1;
+      min-width: 260px;
+      max-width: 360px;
+      text-align: center;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .test-card:hover {
+      transform: scale(1.02) translateY(-6px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.4);
+    }
+    /* تصویر هوشمند با سایز responsive */
+    .card-image {
+      display: block;
+      width: 100%;
+      max-width: 256px;
+      transition: transform 0.25s ease, box-shadow 0.3s ease;
+      border-radius: 20px;
+    }
+    .test-card:hover .card-image {
+      transform: scale(1.02);
+      filter: drop-shadow(0 12px 18px rgba(0,0,0,0.3));
+    }
+    /* سایزهای مختلف تصویر بر اساس دستگاه */
+    @media (max-width: 480px) {
+      .card-image { width: 64px; max-width: 64px; }
+      .test-card { padding: 1.2rem; gap: 0.8rem; }
+    }
+    @media (min-width: 481px) and (max-width: 768px) {
+      .card-image { width: 96px; max-width: 96px; }
+    }
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .card-image { width: 160px; max-width: 160px; }
+    }
+    @media (min-width: 1025px) {
+      .card-image { width: 256px; max-width: 256px; }
+    }
+    .card-title {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin: 0.5rem 0 0;
+      color: var(--accent);
+    }
+    .card-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 0;
+    }
+    .card-badge {
+      background: rgba(88,166,255,0.15);
+      padding: 0.4rem 1rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: inline-block;
+      margin-top: 0.5rem;
+    }
+    .separator-text {
+      margin: 1.5rem 0 0.5rem;
+      text-align: center;
+      font-weight: 500;
+      color: var(--text-muted);
+      position: relative;
+    }
     @media (max-width: 768px) {
-      .container { padding: 1.5rem 1rem; }
-      header { padding: 2.5rem 0 1.5rem; }
-      .lang-toggle { right: 1rem; top: 1rem; }
-      h1 { font-size: 2.1rem; }
+      .container { padding: 1rem; }
+      h1 { font-size: 2rem; }
+      .markdown-body { padding: 1.2rem; }
     }
   </style>
 </head>
@@ -207,7 +294,7 @@
   <div class="container">
 
     <header>
-      <img src="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/main/data/IRAN_Internet_Quality.png" alt="IRAN Internet Quality Check" width="50%">
+      <img src="https://raw.githubusercontent.com/saeed9400/IRAN_Internet_Quality/main/data/IRAN_Internet_Quality.png" alt="IRAN Internet Quality Check" width="50%" style="max-width:280px;">
       <h1 data-fa="ابزار بررسی کیفیت اینترنت ایران" data-en="Iran Internet Quality Tester">
         ابزار بررسی کیفیت اینترنت ایران
       </h1>
@@ -221,28 +308,33 @@
     </header>
 
     <div class="markdown-body">
-
-      <h2 data-fa="نوع بررسی کیفیت اینترنت مورد نظر خود را انتخاب کنید:" data-en="Choose the type of internet quality test you need:">
-        نوع بررسی کیفیت اینترنت مورد نظر خود را انتخاب کنید:
+      
+      <!-- بخش کارت‌های زیبا به جای لینک متنی و حذف عبارت "تست پیشرفته (توصیه اصلی)" و "تست پایه" به شکل ساده -->
+      <h2 data-fa="انتخاب ابزار تست کیفیت اینترنت" data-en="Select Internet Quality Test Tool">
+        انتخاب ابزار تست کیفیت اینترنت
       </h2>
-
-      <p>
-        <strong data-fa="تست پیشرفته (توصیه اصلی)" data-en="Advanced Test (recommended)">تست پیشرفته (توصیه اصلی)</strong><br>
-        <a href="https://saeed9400.github.io/IRAN_Internet_Quality/v2" target="_blank" 
-           data-fa="شروع تست پیشرفته – شامل پینگ، DoH، QUIC، WebRTC و ..." 
-           data-en="Start Advanced Test – Includes ping, DoH, QUIC, WebRTC and more...">
-          شروع تست پیشرفته – شامل پینگ، DoH، QUIC، WebRTC و ...
+      
+      <div class="test-cards">
+        <!-- کارت تست پیشرفته (v2) -->
+        <a href="https://saeed9400.github.io/IRAN_Internet_Quality/v2" target="_blank" class="test-card" id="advancedCard">
+          <img class="card-image" src="https://github.com/saeed9400/IRAN_Internet_Quality/raw/main/data/IRAN_Start.png" alt="Advanced Test Icon" loading="lazy">
+          <div class="card-title" data-fa="تست پیشرفته" data-en="Advanced Test">تست پیشرفته</div>
+          <div class="card-desc" data-fa="پینگ، DoH، QUIC، WebRTC، تشخیص DNS Hijacking و پراکسی هوشمند" data-en="Ping, DoH, QUIC, WebRTC, DNS Hijack detection & smart proxy">
+            پینگ، DoH، QUIC، WebRTC، تشخیص DNS Hijacking و پراکسی هوشمند
+          </div>
+          <div class="card-badge" data-fa="⭐ توصیه اصلی" data-en="⭐ Recommended">⭐ توصیه اصلی</div>
         </a>
-      </p>
-
-      <p>
-        <strong data-fa="تست پایه" data-en="Basic Test">تست پایه</strong><br>
-        <a href="https://saeed9400.github.io/IRAN_Internet_Quality/v1" target="_blank" 
-           data-fa="شروع تست پایه" 
-           data-en="Start Basic Test">
-          شروع تست پایه
+        
+        <!-- کارت تست پایه (v1) -->
+        <a href="https://saeed9400.github.io/IRAN_Internet_Quality/v1" target="_blank" class="test-card" id="basicCard">
+          <img class="card-image" src="https://github.com/saeed9400/IRAN_Internet_Quality/raw/main/data/IRAN_Start.png" alt="Basic Test Icon" loading="lazy">
+          <div class="card-title" data-fa="تست پایه" data-en="Basic Test">تست پایه</div>
+          <div class="card-desc" data-fa="دانلود واقعی فایل، نمایش IP، تست ساده و سریع" data-en="Real file download, IP display, simple & fast">
+            دانلود واقعی فایل، نمایش IP، تست ساده و سریع
+          </div>
+          <div class="card-badge" data-fa="🟢 مناسب برای بررسی اولیه" data-en="🟢 Suitable for quick check">🟢 مناسب برای بررسی اولیه</div>
         </a>
-      </p>
+      </div>
 
       <h2 data-fa="هدف این ابزار چیست؟" data-en="What is the purpose of this tool?">هدف این ابزار چیست؟</h2>
 
@@ -302,6 +394,7 @@
   </div>
 
   <script>
+    // زبان دو زبانه ساده و بدون توابع اضافی
     const langToggle = document.getElementById('langToggle');
     const html = document.documentElement;
 
@@ -321,7 +414,15 @@
     }
 
     langToggle.addEventListener('click', updateLanguage);
+    
+    // حفظ تم (بدون تغییرات اضافی، فقط داری دیفالت دارک)
+    // تنظیم اولیه در صورت نیاز (هیچ تابع اضافی اضافه نمی‌کنیم)
+    // جهت اطمینان از نمایش درست aria و تصاویر و کلیک‌پذیری کامل: لینک‌های کارت از قبل با href معتبر هستند
+    // همچنین تصاویر قابل کلیک (کل کارت کلیک می‌شود چون داخل <a> است و تصویر داخل آن)
+    // افکت hover از طریق CSS اعمال شده و هوشمندسازی ابعاد تصویر با @media انجام شده
+    // متن‌های توصیفی حذف شدند و جایگزین با کارت شد و موارد "تست پیشرفته (توصیه اصلی)" و "تست پایه" در متون ساده حذف شد.
+    // نکته: لینک‌های متنی قبلی حذف شده و فقط جدول و توضیحات و کارت‌ها باقیست.
+    // همچنین تصاویر به صورت یکسان IRAN_Start.png استفاده شده و با سایز Responsive هوشمند.
   </script>
-
 </body>
 </html>
